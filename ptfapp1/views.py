@@ -115,44 +115,6 @@ def mail_composer(event, contact, profile, portfolio_user, base_url):
     return mails
 
 
-# def mail_sender(mails):
-#     """
-#     Step 3 — Dispatch each composed mail via Django's send_mail().
-
-#     Uses the EMAIL_* settings in settings.py (Gmail SMTP + App Password).
-#     Logs success and failure individually so one bad address
-#     doesn't silently kill the rest of the batch.
-
-#     Args:
-#         mails : list of dicts from mail_composer()
-
-#     Returns:
-#         { 'sent': int, 'failed': int }
-#     """
-#     sent = failed = 0
-
-#     for mail in mails:
-#         try:
-#             result = send_mail(
-#                 subject        = mail['subject'],
-#                 message        = mail['body'],
-#                 from_email     = settings.DEFAULT_FROM_EMAIL,
-#                 recipient_list = mail['recipients'],
-#                 fail_silently  = False,  # Changed to False to catch actual errors
-#             )
-#             logger.info(
-#                 "Mail sent     → %s | subject: %s | result: %d",
-#                 mail['recipients'], mail['subject'], result
-#             )
-#             sent += 1
-#         except Exception as e:
-#             logger.exception(
-#                 "Mail FAILED   → %s | subject: %s | error: %s",
-#                 mail['recipients'], mail['subject'], str(e)
-#             )
-#             failed += 1
-
-#     return {'sent': sent, 'failed': failed}
 def mail_sender(mails):
     sent = failed = 0
 
@@ -223,11 +185,6 @@ def _send_contact_emails(request, contact, profile, portfolio_user):
 
     # 3. Send
     result = mail_sender(mails)
-    logger.warning(
-        "DEBUG emails → profile.email=%r | user.email=%r",
-        profile.email,
-        portfolio_user.email,
-    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -266,9 +223,6 @@ class Home_View(View):
         profile = user.site_profile
         
         form = ContactForm(request.POST)
-    # ── TEMP DEBUG — remove after fixing ──────────────────
-        # print("POST data  :", request.POST)
-        # print("Form errors:", form.errors)
         
         if form.is_valid():
             contact      = form.save(commit=False)

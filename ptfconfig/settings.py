@@ -31,11 +31,11 @@ DEBUG = True
 
 # ALLOWED_HOSTS = []
 
-#for  testing with local network / smartphones etc
-ALLOWED_HOSTS = ['*']
-# ALLOWED_HOSTS = ['localhost','10.134.54.95']
+# For production, set specific domains in environment variable or update here
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
-# CSRF_TRUSTED_ORIGINS= ['http://10.134.54.95:8000']
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -135,21 +135,7 @@ DATABASES = {
     }
 }
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django.db.backends': {
-#             'level': 'DEBUG',
-#             'handlers': ['console'],
-#         },
-#     },
-# }
+# Note: Logging configuration removed (was for development DB query debugging)
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

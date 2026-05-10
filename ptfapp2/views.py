@@ -1,6 +1,4 @@
-from django.shortcuts import render
-
-# Create your views here. 
+from django.shortcuts import render 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -29,7 +27,7 @@ from .forms import (
     CoUserRegistrationForm, ProfileForm, SkillForm,
     ProjectForm, SocialLinkForm, ShortLinkForm, DocumentForm
 )
-from ptfapp1.models import (                          #  FIXED: was ptfapp
+from ptfapp1.models import (
     SiteProfile, Skill, Project, SocialLink,
     ShortLink, EmailCapture, Contact, Document, DownloadLog
 )
