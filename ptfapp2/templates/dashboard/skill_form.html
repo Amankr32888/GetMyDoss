@@ -1,0 +1,38 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Skill{% endblock %}
+{% block nav_skills %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">{% if form.instance.pk %}Edit{% else %}Add{% endif %} <span class="accent">Skill</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:skills_list' %}" class="btn-nova btn-nova-ghost"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="nova-card" style="max-width:540px;">
+  <div class="nova-card-header"><span>Skill Details</span></div>
+  <div style="padding:24px;">
+    <form method="post" class="form-nova">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Skill Name</label>
+        {{ form.name }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        {{ form.category }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display Order</label>
+        {{ form.order }}
+        <div class="form-hint">Lower numbers appear first</div>
+      </div>
+      <div style="display:flex;gap:10px;padding-top:8px;">
+        <button type="submit" class="btn-nova btn-nova-gold"><i class="bi bi-check-lg"></i> Save Skill</button>
+        <a href="{% url 'ptfapp2:skills_list' %}" class="btn-nova btn-nova-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

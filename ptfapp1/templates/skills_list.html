@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Skills — {{ profile.full_name }}{% endblock %}
+
+{% block extra_css %}
+.skills-hero { padding:60px 60px 40px;text-align:center;position:relative; }
+.skills-hero::after { content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+
+.skills-wrap { max-width:900px;margin:0 auto;padding:0 60px 80px; }
+
+.sk-group { margin-bottom:48px; }
+.sk-group-head {
+  display:flex;align-items:center;gap:14px;margin-bottom:24px;
+  padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.sk-group-icon { width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px; }
+.sk-group-icon.tech { background:var(--cyan-dim);border:1px solid rgba(0,255,224,.2);color:var(--cyan); }
+.sk-group-icon.soft { background:var(--violet-dim);border:1px solid rgba(139,92,246,.25);color:#a78bfa; }
+.sk-group-title { font-size:18px;font-weight:800;letter-spacing:-.5px; }
+.sk-count { font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-left:auto; }
+
+.sk-pills { display:flex;flex-wrap:wrap;gap:10px; }
+.sk-pill {
+  padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;
+  transition:all .25s;cursor:default;
+  display:flex;align-items:center;gap:8px;
+}
+.sk-pill.tech { background:var(--cyan-dim);border:1px solid rgba(0,255,224,.18);color:var(--cyan); }
+.sk-pill.tech:hover { background:rgba(0,255,224,.16);border-color:rgba(0,255,224,.4);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,255,224,.12); }
+.sk-pill.soft { background:var(--violet-dim);border:1px solid rgba(139,92,246,.22);color:#a78bfa; }
+.sk-pill.soft:hover { background:rgba(139,92,246,.18);border-color:rgba(139,92,246,.4);transform:translateY(-2px);box-shadow:0 8px 20px rgba(139,92,246,.12); }
+.sk-dot { width:6px;height:6px;border-radius:50%;flex-shrink:0; }
+.sk-dot.tech { background:var(--cyan);box-shadow:0 0 8px var(--cyan); }
+.sk-dot.soft { background:#a78bfa;box-shadow:0 0 8px #a78bfa; }
+
+.back-btn {
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:9px 20px;border-radius:8px;
+  border:1px solid var(--border);background:var(--surface);color:var(--text-muted);
+  text-decoration:none;transition:all .2s;
+}
+.back-btn:hover { border-color:var(--gold-border);color:var(--gold-bright);background:var(--gold-dim); }
+{% endblock %}
+
+{% block content %}
+<div class="skills-hero reveal">
+  <div style="font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;text-shadow:0 0 12px rgba(201,168,76,.5);">Skills & Expertise</div>
+  <h1 style="font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-2px;margin-bottom:12px;">
+    What I <span style="background:linear-gradient(135deg,var(--gold-bright),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Have Gathered !</span>
+  </h1>
+  <p style="font-size:14px;color:var(--text-muted);max-width:420px;margin:0 auto 24px;line-height:1.7;">A complete overview of my technical and soft skill set.</p>
+  <a href="{% url 'ptfapp1:home' profile.user.username %}" class="back-btn"><i class="bi bi-arrow-left"></i> Back to Portfolio</a>
+</div>
+
+<div class="skills-wrap">
+  {% if skills_technical %}
+  <div class="sk-group reveal">
+    <div class="sk-group-head">
+      <div class="sk-group-icon tech"><i class="bi bi-cpu"></i></div>
+      <div class="sk-group-title">Technical Skills</div>
+      <div class="sk-count">{{ skills_technical|length }} skills</div>
+    </div>
+    <div class="sk-pills">
+      {% for skill in skills_technical %}
+      <div class="sk-pill tech">
+        <div class="sk-dot tech"></div>
+        {{ skill.name }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if skills_soft %}
+  <div class="sk-group reveal">
+    <div class="sk-group-head">
+      <div class="sk-group-icon soft"><i class="bi bi-stars"></i></div>
+      <div class="sk-group-title">Soft Skills</div>
+      <div class="sk-count">{{ skills_soft|length }} skills</div>
+    </div>
+    <div class="sk-pills">
+      {% for skill in skills_soft %}
+      <div class="sk-pill soft">
+        <div class="sk-dot soft"></div>
+        {{ skill.name }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if not skills_technical and not skills_soft %}
+  <div style="text-align:center;padding:80px 20px;">
+    <div style="font-size:36px;opacity:.15;margin-bottom:14px;">⬡</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);letter-spacing:1px;">Skills not listed yet ......</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

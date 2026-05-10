@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %} — GetMyDoss</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+
+    /* ══════════════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════════════ */
+    :root {
+      --gold:        #c9a84c;
+      --gold-bright: #f0c96e;
+      --gold-dim:    rgba(201,168,76,0.12);
+      --gold-border: rgba(201,168,76,0.25);
+      --cyan:        #00ffe0;
+      --cyan-dim:    rgba(0,255,224,0.1);
+      --magenta:     #ff2d78;
+      --magenta-dim: rgba(255,45,120,0.1);
+      --violet:      #8b5cf6;
+      --bg:          #03020e;
+      --bg2:         #07061a;
+      --bg3:         #0d0c20;
+      --surface:     rgba(255,255,255,0.03);
+      --surface2:    rgba(255,255,255,0.06);
+      --border:      rgba(255,255,255,0.07);
+      --text:        #e8e4f0;
+      --text-muted:  rgba(232,228,240,0.55);
+      --text-dim:    rgba(255, 255, 230, 0.9);
+      --mono:        'DM Mono', monospace;
+      --display:     'Syne', sans-serif;
+      --serif:       'Playfair Display', serif;
+      --radius:      12px;
+
+      /* Layout — single source of truth */
+      --sidebar-w:   220px;
+      --topbar-h:    54px;   /* mobile top bar height */
+      --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ══════════════════════════════════════════════════
+       RESET
+    ══════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--display);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ══════════════════════════════════════════════════
+       GRID OVERLAY + NEBULA
+    ══════════════════════════════════════════════════ */
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        repeating-linear-gradient(0deg,  transparent,transparent 40px,rgba(255,255,255,.01) 40px,rgba(255,255,255,.01) 41px),
+        repeating-linear-gradient(90deg, transparent,transparent 40px,rgba(255,255,255,.01) 40px,rgba(255,255,255,.01) 41px);
+    }
+    .nebula-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .neb { position: absolute; border-radius: 50%; filter: blur(90px); animation: nebPulse 9s ease-in-out infinite alternate; }
+    .neb-1 { width: clamp(200px,40vw,500px); height: clamp(160px,32vw,400px); top: -100px; left: -80px; background: radial-gradient(ellipse,rgba(139,92,246,0.14),transparent 70%); }
+    .neb-2 { width: clamp(160px,32vw,400px); height: clamp(160px,32vw,400px); top: 30%; right: -100px; background: radial-gradient(ellipse,rgba(0,255,224,0.08),transparent 70%); animation-delay:3s; }
+    .neb-3 { width: clamp(240px,45vw,600px); height: clamp(100px,20vw,250px); bottom: 5%; left: 15%; background: radial-gradient(ellipse,rgba(201,168,76,0.06),transparent 70%); animation-delay:6s; }
+    @keyframes nebPulse { from{opacity:.7;transform:scale(1)} to{opacity:1;transform:scale(1.1)} }
+
+    /* ══════════════════════════════════════════════════
+       SIDEBAR  (always fixed, full height)
+       On mobile it slides off-canvas via transform.
+    ══════════════════════════════════════════════════ */
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: rgba(3,2,14,0.92);
+      border-right: 1px solid var(--border);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      z-index: 300;
+      /* Flex column so bottom section stays pinned */
+      display: flex; flex-direction: column;
+      transition: transform .35s var(--ease);
+      will-change: transform;
+    }
+
+    /* ── Brand row ── */
+    .sidebar-brand {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      flex-shrink: 0;
+    }
+    .brand-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg,var(--gold),#a07830);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      color: var(--bg); letter-spacing: 1px; flex-shrink: 0;
+    }
+    .brand-name {
+      font-family: var(--mono); font-size: 11px;
+      letter-spacing: 2px; color: var(--gold-bright);
+      text-shadow: 0 0 12px rgba(201,168,76,0.4); font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .brand-sub {
+      font-family: var(--mono); font-size: 8px;
+      color: var(--text-dim); letter-spacing: 1px;
+    }
+
+    /* ── User row ── */
+    .sidebar-user {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      flex-shrink: 0;
+    }
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--gold-dim); border: 1px solid var(--gold-border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 11px;
+      color: var(--gold-bright); flex-shrink: 0;
+    }
+    .user-info { min-width: 0; }
+    .user-name {
+      font-size: 12px; color: var(--text); font-weight: 700;
+      letter-spacing: -0.3px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .user-role {
+      font-family: var(--mono); font-size: 9px;
+      color: var(--text-dim); letter-spacing: 1px;
+    }
+
+    /* ── Scrollable nav links — flex:1 fills remaining space ── */
+    .sidebar-nav {
+      flex: 1; overflow-y: auto; padding: 10px 0;
+      scrollbar-width: thin; scrollbar-color: var(--gold-border) transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar { width: 3px; }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: var(--gold-border); border-radius: 2px; }
+
+    .nav-section-label {
+      font-family: var(--mono); font-size: 8px;
+      letter-spacing: 2px; color: var(--text-dim);
+      text-transform: uppercase; padding: 12px 18px 5px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 18px; color: var(--text-muted);
+      text-decoration: none; font-family: var(--mono);
+      font-size: 11px; letter-spacing: 0.5px;
+      border-left: 2px solid transparent;
+      transition: all 0.2s; position: relative;
+    }
+    .nav-item i { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+    .nav-item:hover { color: var(--gold-bright); background: var(--gold-dim); border-left-color: var(--gold); }
+    .nav-item.active { color: var(--gold-bright); background: var(--gold-dim); border-left-color: var(--gold); }
+    .nav-divider { height: 1px; background: var(--border); margin: 8px 18px; }
+
+    /* ── Pinned bottom — flex-shrink:0 keeps it out of scroll ──
+       "Change Password" and "Logout" NEVER scroll away.          */
+    .sidebar-bottom {
+      flex-shrink: 0;
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .sidebar-clock {
+      font-family: var(--mono); font-size: 9px;
+      color: var(--text-dim); letter-spacing: 2px;
+      text-align: center; padding: 4px 0 6px;
+    }
+    .btn-sidebar {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 8px 14px; border-radius: 8px;
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 1px; text-transform: uppercase;
+      border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s;
+      text-decoration: none; width: 100%;
+    }
+    .btn-sidebar:hover { border-color: var(--gold-border); color: var(--gold-bright); background: var(--gold-dim); }
+    .btn-sidebar.danger:hover { border-color: rgba(255,45,120,0.3); color: var(--magenta); background: var(--magenta-dim); }
+
+    /* ══════════════════════════════════════════════════
+       MOBILE TOP BAR
+       Only shown on ≤900px.  Contains the hamburger
+       button and the live clock.
+    ══════════════════════════════════════════════════ */
+    .mobile-topbar {
+      display: none; /* shown via media query */
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--topbar-h); z-index: 200;
+      background: rgba(3,2,14,0.9);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      align-items: center; justify-content: space-between;
+      padding: 0 16px; gap: 12px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-brand {
+      font-family: var(--mono); font-size: clamp(9px,3vw,11px);
+      letter-spacing: 2px; color: var(--gold-bright);
+      text-shadow: 0 0 12px rgba(201,168,76,.4);
+      font-weight: 700; white-space: nowrap;
+    }
+    .topbar-clock {
+      font-family: var(--mono); font-size: 11px;
+      color: var(--text-dim); letter-spacing: 2px;
+      white-space: nowrap;
+    }
+    .topbar-hamburger {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-muted); font-size: 18px;
+      transition: all .2s; flex-shrink: 0;
+    }
+    .topbar-hamburger:hover { border-color: var(--gold-border); color: var(--gold-bright); background: var(--gold-dim); }
+
+    /* ══════════════════════════════════════════════════
+       SIDEBAR OVERLAY (mobile only)
+    ══════════════════════════════════════════════════ */
+    .sidebar-overlay {
+      position: fixed; inset: 0; z-index: 250;
+      background: rgba(3,2,14,0.72);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s var(--ease);
+    }
+    .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+
+    /* Close button — inside sidebar, only visible on mobile */
+    .sidebar-close {
+      display: none;
+      position: absolute; top: 12px; right: 12px;
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--surface2); border: 1px solid var(--border);
+      align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-muted); font-size: 13px;
+      transition: all .2s; flex-shrink: 0; z-index: 10;
+    }
+    .sidebar-close:hover { border-color: var(--magenta); color: var(--magenta); background: var(--magenta-dim); }
+
+    /* ══════════════════════════════════════════════════
+       MAIN CONTENT AREA
+    ══════════════════════════════════════════════════ */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+      position: relative; z-index: 1;
+      padding: clamp(20px,3vw,28px) clamp(16px,3.5vw,36px);
+    }
+
+    /* ══════════════════════════════════════════════════
+       PAGE HEADER
+    ══════════════════════════════════════════════════ */
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: clamp(18px,3vw,28px);
+      padding-bottom: clamp(14px,2vw,20px);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .page-title-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .page-num { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
+    .page-title {
+      /* Fluid: never breaks its container */
+      font-size: clamp(18px, 4vw, 26px);
+      font-weight: 800; letter-spacing: -0.8px; color: var(--text);
+      line-height: 1.1;
+    }
+    .page-title .accent {
+      background: linear-gradient(135deg,var(--gold-bright),var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* ══════════════════════════════════════════════════
+       ALERTS
+    ══════════════════════════════════════════════════ */
+    .alert-nova {
+      border-radius: var(--radius); padding: 12px 18px; margin-bottom: 14px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.5px;
+      display: flex; align-items: center; gap: 10px; border: 1px solid;
+    }
+    .alert-success { background: rgba(34,197,94,0.08);  border-color: rgba(34,197,94,0.25);  color: #4ade80; }
+    .alert-error,
+    .alert-danger  { background: rgba(255,45,120,0.08); border-color: rgba(255,45,120,0.25); color: var(--magenta); }
+    .alert-info    { background: var(--cyan-dim);        border-color: rgba(0,255,224,0.2);   color: var(--cyan); }
+    .alert-warning { background: var(--gold-dim);        border-color: var(--gold-border);    color: var(--gold-bright); }
+
+    /* ══════════════════════════════════════════════════
+       NOVA CARD
+    ══════════════════════════════════════════════════ */
+    .nova-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .nova-card-header {
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase;
+      flex-wrap: wrap; gap: 8px;
+    }
+
+    /* ══════════════════════════════════════════════════
+       TABLE
+    ══════════════════════════════════════════════════ */
+    .nova-table { width: 100%; border-collapse: collapse; }
+    .nova-table thead tr { border-bottom: 1px solid var(--border); }
+    .nova-table th {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+      color: var(--text-dim); text-transform: uppercase;
+      padding: 12px 16px; text-align: left; font-weight: 400;
+      white-space: nowrap;
+    }
+    .nova-table td {
+      padding: 13px 16px; font-size: 13px; color: var(--text-muted);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .nova-table tbody tr:hover { background: var(--surface2); }
+    .nova-table tbody tr:last-child td { border-bottom: none; }
+    .nova-table td .primary-text { color: var(--text); font-weight: 600; font-size: 13px; }
+
+    /* Responsive table — hide less important cols on small screens */
+    @media (max-width: 600px) {
+      .nova-table .col-hide { display: none; }
+    }
+
+    /* ══════════════════════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════════════════════ */
+    .btn-nova {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 18px; border-radius: 8px;
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      text-decoration: none; border: 1px solid;
+      cursor: pointer; transition: all 0.2s; font-weight: 500;
+      white-space: nowrap;
+    }
+    .btn-nova-gold {
+      background: linear-gradient(135deg,var(--gold),#a07830);
+      border-color: transparent; color: var(--bg);
+      box-shadow: 0 4px 20px rgba(201,168,76,0.25);
+    }
+    .btn-nova-gold:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(201,168,76,0.4); color: var(--bg); }
+    .btn-nova-ghost { background: var(--surface); border-color: var(--border); color: var(--text-muted); }
+    .btn-nova-ghost:hover { border-color: var(--gold-border); color: var(--gold-bright); background: var(--gold-dim); }
+    .btn-nova-danger { background: rgba(255,45,120,0.08); border-color: rgba(255,45,120,0.2); color: var(--magenta); }
+    .btn-nova-danger:hover { background: rgba(255,45,120,0.15); border-color: rgba(255,45,120,0.4); }
+    .btn-nova-cyan { background: var(--cyan-dim); border-color: rgba(0,255,224,0.2); color: var(--cyan); }
+    .btn-nova-cyan:hover { background: rgba(0,255,224,0.15); border-color: rgba(0,255,224,0.35); }
+    .btn-sm { padding: 5px 12px; font-size: 9px; border-radius: 6px; }
+
+    /* ══════════════════════════════════════════════════
+       BADGES
+    ══════════════════════════════════════════════════ */
+    .badge-nova { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-family: var(--mono); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+    .badge-gold   { background: var(--gold-dim);              border: 1px solid var(--gold-border);            color: var(--gold-bright); }
+    .badge-cyan   { background: var(--cyan-dim);              border: 1px solid rgba(0,255,224,0.2);           color: var(--cyan); }
+    .badge-violet { background: rgba(139,92,246,0.12);        border: 1px solid rgba(139,92,246,0.25);         color: #a78bfa; }
+    .badge-muted  { background: var(--surface2);              border: 1px solid var(--border);                 color: var(--text-dim); }
+
+    /* ══════════════════════════════════════════════════
+       FORMS
+    ══════════════════════════════════════════════════ */
+    .form-nova { max-width: 680px; }
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block; font-family: var(--mono); font-size: 9px;
+      letter-spacing: 2px; color: var(--text-dim);
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .form-nova input[type=text],
+    .form-nova input[type=email],
+    .form-nova input[type=password],
+    .form-nova input[type=url],
+    .form-nova input[type=number],
+    .form-nova textarea,
+    .form-nova select,
+    .form-nova input[type=file],
+    input.nova-input, textarea.nova-input, select.nova-input {
+      width: 100%; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: var(--mono); font-size: 12px;
+      padding: 11px 14px; transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none; appearance: none;
+    }
+    .form-nova input:focus,
+    .form-nova textarea:focus,
+    .form-nova select:focus,
+    input.nova-input:focus, textarea.nova-input:focus, select.nova-input:focus {
+      border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+    }
+    .form-nova textarea { min-height: 120px; resize: vertical; }
+    .form-nova select option { background: var(--bg2); color: var(--text); }
+    .form-hint { font-family: var(--mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.5px; margin-top: 5px; }
+    .form-check-nova { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .form-check-nova input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--gold); }
+
+    /* ══════════════════════════════════════════════════
+       MISC
+    ══════════════════════════════════════════════════ */
+    .check-yes { color: var(--cyan); font-size: 14px; }
+    .check-no  { color: var(--text-dim); font-size: 14px; }
+
+    .empty-state { padding: 60px 20px; text-align: center; }
+    .empty-state-icon { font-size: 32px; opacity: 0.2; margin-bottom: 12px; }
+    .empty-state-text { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 1px; }
+
+    /* ══════════════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════════════ */
+
+    /* ── Desktop (≥901px): sidebar always visible, no topbar ── */
+    @media (min-width: 901px) {
+      .mobile-topbar  { display: none !important; }
+      .sidebar-overlay{ display: none !important; }
+      .sidebar-close  { display: none !important; }
+      .sidebar { transform: translateX(0) !important; }
+    }
+
+    /* ── Mobile (≤900px): sidebar off-canvas, topbar on ── */
+    @media (max-width: 900px) {
+      /* Sidebar hides off left edge */
+      .sidebar {
+        transform: translateX(-100%);
+        /* slightly wider so content breathes */
+        width: min(var(--sidebar-w), 85vw);
+        z-index: 300;
+      }
+      .sidebar.open { transform: translateX(0); }
+
+      /* Show close button inside sidebar on mobile */
+      .sidebar-close { display: flex; }
+
+      /* Main content fills full width, pushed down by topbar */
+      .main-content {
+        margin-left: 0;
+        padding: clamp(14px,4vw,24px);
+        padding-top: calc(var(--topbar-h) + clamp(14px,3vw,20px));
+      }
+
+      /* Show the top bar */
+      .mobile-topbar { display: flex; }
+
+      /* Hide desktop clock from sidebar on mobile
+         (clock is now in the topbar) */
+      .sidebar-clock { display: none; }
+    }
+
+    @media (max-width: 500px) {
+      .page-title { font-size: clamp(16px, 5.5vw, 22px); }
+      .btn-nova { font-size: 9px; padding: 7px 14px; }
+    }
+
+    {% block extra_head %}{% endblock %}
+    </style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="nebula-bg">
+  <div class="neb neb-1"></div>
+  <div class="neb neb-2"></div>
+  <div class="neb neb-3"></div>
+</div>
+
+<!-- ── MOBILE TOP BAR ─────────────────────────────── -->
+<div class="mobile-topbar" id="mobileTopbar">
+  <div class="topbar-left">
+    <button class="topbar-hamburger" id="hamburgerBtn"
+            aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
+      <i class="bi bi-list"></i>
+    </button>
+    <span class="topbar-brand">GetMyDoss</span>
+  </div>
+  <span class="topbar-clock" id="topbar-clock">--:--:--</span>
+</div>
+<!-- ─────────────────────────────────────────────── -->
+
+<!-- Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+<!-- ── SIDEBAR ────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Dashboard navigation">
+
+  <!-- Close button (mobile only) -->
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close navigation">
+    <i class="bi bi-x-lg"></i>
+  </button>
+
+  <!-- Brand -->
+  <div class="sidebar-brand">
+    <div class="brand-mark">G</div>
+    <div style="min-width:0;">
+      <div class="brand-name">GetMyDoss</div>
+      <div class="brand-sub">Portfolio OS</div>
+    </div>
+  </div>
+
+  <!-- User -->
+  <div class="sidebar-user">
+    <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+    <div class="user-info">
+      <div class="user-name">{{ request.user.username }}</div>
+      <div class="user-role">{% if request.user.is_superuser %}SUPERUSER{% else %}EDITOR{% endif %}</div>
+    </div>
+  </div>
+
+  <!-- Nav links — scrollable middle section -->
+  <nav class="sidebar-nav" aria-label="Primary navigation">
+    <div class="nav-section-label">Main</div>
+    <a href="{% url 'ptfapp2:dashboard' %}"     class="nav-item {% block nav_dashboard %}{% endblock %}"><i class="bi bi-grid-1x2"></i>Overview</a>
+    <a href="{% url 'ptfapp2:profile_page' %}"  class="nav-item {% block nav_profile_page %}{% endblock %}"><i class="bi bi-person-circle"></i>Profile</a>
+    <a href="{% url 'ptfapp2:profile_form' %}"  class="nav-item {% block nav_profile %}{% endblock %}"><i class="bi bi-pencil-square"></i>Edit Profile</a>
+
+    <div class="nav-section-label">Content</div>
+    <a href="{% url 'ptfapp2:skills_list' %}"       class="nav-item {% block nav_skills %}{% endblock %}"><i class="bi bi-star"></i>Skills</a>
+    <a href="{% url 'ptfapp2:projects_list' %}"     class="nav-item {% block nav_projects %}{% endblock %}"><i class="bi bi-folder2-open"></i>Projects</a>
+    <a href="{% url 'ptfapp2:social_links_list' %}" class="nav-item {% block nav_social %}{% endblock %}"><i class="bi bi-share"></i>Social Links</a>
+    <a href="{% url 'ptfapp2:short_links_list' %}"  class="nav-item {% block nav_shortlinks %}{% endblock %}"><i class="bi bi-link-45deg"></i>Short Links</a>
+    <a href="{% url 'ptfapp2:documents_list' %}"    class="nav-item {% block nav_docs %}{% endblock %}"><i class="bi bi-file-earmark"></i>Documents</a>
+    <a href="{% url 'ptfapp2:messages_list' %}"     class="nav-item {% block nav_messages %}{% endblock %}"><i class="bi bi-envelope"></i>Messages</a>
+
+    {% if request.user.is_superuser %}
+    <div class="nav-section-label">Admin</div>
+    <a href="{% url 'ptfapp2:couser_list' %}" class="nav-item {% block nav_cousers %}{% endblock %}"><i class="bi bi-people"></i>Co-Users</a>
+    {% endif %}
+
+    <div class="nav-divider"></div>
+    <a href="{% url 'ptfapp1:home' request.user.username %}" target="_blank" class="nav-item">
+      <i class="bi bi-box-arrow-up-right"></i>View Portfolio
+    </a>
+  </nav>
+
+  <!-- ── PINNED BOTTOM — Change Password & Logout always visible ── -->
+  <div class="sidebar-bottom">
+    <!-- Clock shown here on desktop only; mobile clock is in topbar -->
+    <div class="sidebar-clock" id="sb-clock">--:--:--</div>
+
+    <form method="post" action="{% url 'ptfapp2:password_change' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-sidebar">
+        <i class="bi bi-key"></i> Change Password
+      </button>
+    </form>
+    <form method="post" action="{% url 'ptfapp2:logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-sidebar danger">
+        <i class="bi bi-box-arrow-left"></i> Logout
+      </button>
+    </form>
+  </div>
+
+</aside>
+<!-- ─────────────────────────────────────────────── -->
+
+<!-- ── MAIN CONTENT ───────────────────────────────── -->
+<div class="main-content">
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert-nova alert-{{ message.tags }}">
+    <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script>
+/* ── Clock — runs on both desktop (sidebar) and mobile (topbar) ── */
+(function(){
+  function tick(){
+    const n=new Date();
+    const t=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+    const sb=document.getElementById('sb-clock');
+    const tb=document.getElementById('topbar-clock');
+    if(sb) sb.textContent=t;
+    if(tb) tb.textContent=t;
+  }
+  tick(); setInterval(tick,1000);
+})();
+
+/* ── Active nav link (by current URL path) ── */
+(function(){
+  const path=window.location.pathname;
+  document.querySelectorAll('.nav-item').forEach(a=>{
+    if(a.getAttribute('href')===path) a.classList.add('active');
+  });
+})();
+
+/* ── Mobile sidebar drawer ── */
+(function(){
+  const hamburger = document.getElementById('hamburgerBtn');
+  const sidebar   = document.getElementById('sidebar');
+  const overlay   = document.getElementById('sidebarOverlay');
+  const closeBtn  = document.getElementById('sidebarClose');
+
+  function openSidebar(){
+    sidebar.classList.add('open');
+    overlay.classList.add('open');
+    hamburger.setAttribute('aria-expanded','true');
+    overlay.removeAttribute('aria-hidden');
+    document.body.style.overflow='hidden';
+    closeBtn.focus();
+  }
+  function closeSidebar(){
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+    hamburger.setAttribute('aria-expanded','false');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+    hamburger.focus();
+  }
+
+  if(hamburger) hamburger.addEventListener('click', openSidebar);
+  if(closeBtn)  closeBtn.addEventListener('click',  closeSidebar);
+  if(overlay)   overlay.addEventListener('click',   closeSidebar);
+
+  /* Close when a nav link is tapped on mobile */
+  if(sidebar){
+    sidebar.querySelectorAll('.nav-item').forEach(l=>{
+      l.addEventListener('click', ()=>{
+        if(window.innerWidth<=900) closeSidebar();
+      });
+    });
+  }
+
+  /* Escape key */
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape' && sidebar && sidebar.classList.contains('open')) closeSidebar();
+  });
+})();
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

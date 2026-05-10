@@ -1,0 +1,49 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Social Link{% endblock %}
+{% block nav_social %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">{% if form.instance.pk %}Edit{% else %}Add{% endif %} <span class="accent">Social Link</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:social_links_list' %}" class="btn-nova btn-nova-ghost"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="nova-card" style="max-width:540px;">
+  <div class="nova-card-header"><span>Link Details</span></div>
+  <div style="padding:24px;">
+    <form method="post" class="form-nova">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Platform</label>
+        {{ form.platform }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL</label>
+        {{ form.url }}
+        <div class="form-hint">Full URL including https://</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon Filename</label>
+        {{ form.icon_filename }}
+        <div class="form-hint">Bootstrap icon name: linkedin, github, twitter, instagram</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display Order</label>
+        {{ form.order }}
+      </div>
+      <div class="form-group">
+        <label class="form-check-nova">
+          {{ form.is_active }}
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:1px;">SHOW ON PORTFOLIO</span>
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;padding-top:8px;">
+        <button type="submit" class="btn-nova btn-nova-gold"><i class="bi bi-check-lg"></i> Save Link</button>
+        <a href="{% url 'ptfapp2:social_links_list' %}" class="btn-nova btn-nova-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

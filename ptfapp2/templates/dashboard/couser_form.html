@@ -1,0 +1,44 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Co-User{% endblock %}
+{% block nav_cousers %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">{% if form.instance.pk %}Edit{% else %}Add{% endif %} <span class="accent">Co-User</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:couser_list' %}" class="btn-nova btn-nova-ghost"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="nova-card" style="max-width:540px;">
+  <div class="nova-card-header"><span>Account Details</span></div>
+  <div style="padding:24px;">
+    <form method="post" class="form-nova">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Username <span style="font-size:8px;opacity:.6;">(9 chars max: lowercase + numbers)</span></label>
+        {{ form.username }}
+        <div class="form-hint">e.g. john12345</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        {{ form.email }}
+      </div>
+      {% if not form.instance.pk %}
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        {{ form.password1 }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        {{ form.password2 }}
+      </div>
+      {% endif %}
+      <div style="display:flex;gap:10px;padding-top:8px;">
+        <button type="submit" class="btn-nova btn-nova-gold"><i class="bi bi-check-lg"></i> Save User</button>
+        <a href="{% url 'ptfapp2:couser_list' %}" class="btn-nova btn-nova-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

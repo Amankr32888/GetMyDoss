@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ profile.full_name|default:"Portfolio" }}{% endblock %} — GetMyDoss</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+
+    /* ══════════════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════════════ */
+    :root {
+      --gold:        #c9a84c;
+      --gold-bright: #f0c96e;
+      --gold-dim:    rgba(201,168,76,0.13);
+      --gold-border: rgba(201,168,76,0.28);
+      --cyan:        #00ffe0;
+      --cyan-dim:    rgba(0,255,224,0.1);
+      --magenta:     #ff2d78;
+      --magenta-dim: rgba(255,45,120,0.1);
+      --violet:      #8b5cf6;
+      --violet-dim:  rgba(139,92,246,0.13);
+      --bg:          #03020e;
+      --bg2:         #07061a;
+      --bg3:         #0d0c20;
+      --surface:     rgba(255,255,255,0.03);
+      --surface2:    rgba(255,255,255,0.06);
+      --border:      rgba(255,255,255,0.07);
+      --text:        #e8e4f0;
+      --text-muted:  rgba(232,228,240,0.65);
+      --text-dim:    rgba(255, 255, 230, 0.9);
+      --mono:        'DM Mono', monospace;
+      --display:     'Syne', sans-serif;
+      --serif:       'Playfair Display', serif;
+
+      /* Layout tokens — change once, works everywhere */
+      --nav-h:      60px;
+      --drawer-w:   280px;
+      --ease-out:   cubic-bezier(0.4, 0, 0.2, 1);
+      --pad-x:      clamp(18px, 5vw, 60px);
+      --pad-y:      clamp(60px, 8vw, 100px);
+    }
+
+    /* ══════════════════════════════════════════════════
+       RESET
+    ══════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--display);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ══════════════════════════════════════════════════
+       CUSTOM CURSOR — only on devices that support hover
+       (prevents invisible cursor bug on touch screens)
+    ══════════════════════════════════════════════════ */
+    #cur, #cur-ring { display: none; pointer-events: none; }
+
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+
+      #cur {
+        display: block;
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--gold);
+        position: fixed; top: 0; left: 0; z-index: 9999;
+        transform: translate(-50%,-50%);
+        transition: transform .08s, background .2s;
+        box-shadow: 0 0 16px var(--gold), 0 0 40px rgba(201,168,76,.3);
+      }
+      #cur-ring {
+        display: block;
+        width: 36px; height: 36px; border-radius: 50%;
+        border: 1px solid rgba(201,168,76,.4);
+        position: fixed; top: 0; left: 0; z-index: 9998;
+        transform: translate(-50%,-50%);
+        transition: transform .2s, width .25s, height .25s, border-color .2s;
+      }
+      body:has(a:hover) #cur {
+        transform: translate(-50%,-50%) scale(1.6);
+        background: var(--cyan);
+        box-shadow: 0 0 20px var(--cyan);
+      }
+      body:has(a:hover) #cur-ring {
+        width: 52px; height: 52px;
+        border-color: rgba(0,255,224,.4);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════
+       COSMOS BACKGROUND
+       Nebulae use clamp so they scale instead of
+       overflowing on small viewports.
+    ══════════════════════════════════════════════════ */
+    #cosmos {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; overflow: hidden;
+    }
+    .neb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px);
+      animation: nebPulse 9s ease-in-out infinite alternate;
+    }
+    .neb-1 {
+      width: clamp(200px,45vw,600px); height: clamp(140px,30vw,400px);
+      top: -100px; left: -100px;
+      background: radial-gradient(ellipse,rgba(139,92,246,.17),transparent 70%);
+    }
+    .neb-2 {
+      width: clamp(180px,38vw,500px); height: clamp(180px,38vw,500px);
+      top: 25%; right: -150px;
+      background: radial-gradient(ellipse,rgba(0,255,224,.09),transparent 70%);
+      animation-delay: 2s;
+    }
+    .neb-3 {
+      width: clamp(260px,50vw,700px); height: clamp(110px,22vw,300px);
+      bottom: 8%; left: 20%;
+      background: radial-gradient(ellipse,rgba(201,168,76,.07),transparent 70%);
+      animation-delay: 5s;
+    }
+    .neb-4 {
+      width: clamp(140px,28vw,400px); height: clamp(140px,28vw,400px);
+      bottom: -50px; right: 8%;
+      background: radial-gradient(ellipse,rgba(255,45,120,.09),transparent 70%);
+      animation-delay: 1s;
+    }
+    @keyframes nebPulse {
+      from { opacity: .7; transform: scale(1); }
+      to   { opacity: 1;  transform: scale(1.12); }
+    }
+
+    /* Rotating rings — purely decorative, hidden on tiny screens */
+    .cring {
+      position: fixed; border-radius: 50%; border: 1px solid;
+      pointer-events: none; top: 50%; left: 50%;
+      animation: cSpin linear infinite;
+    }
+    .cr1 { width:700px;height:700px;margin:-350px;border-color:rgba(201,168,76,.04);animation-duration:60s; }
+    .cr2 { width:1000px;height:1000px;margin:-500px;border-color:rgba(0,255,224,.03);animation-duration:90s;animation-direction:reverse; }
+    .cr3 { width:1300px;height:1300px;margin:-650px;border-color:rgba(139,92,246,.02);animation-duration:120s; }
+    @keyframes cSpin { to { transform: rotate(360deg); } }
+
+    /* Subtle grid overlay */
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        repeating-linear-gradient(0deg,  transparent,transparent 40px,rgba(255,255,255,.012) 40px,rgba(255,255,255,.012) 41px),
+        repeating-linear-gradient(90deg, transparent,transparent 40px,rgba(255,255,255,.012) 40px,rgba(255,255,255,.012) 41px);
+    }
+
+    /* ══════════════════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════════════════ */
+    nav.site-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      background: rgba(3,2,14,0.72);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      padding: 0 var(--pad-x);
+      display: flex; align-items: center; justify-content: space-between;
+      height: var(--nav-h); gap: 12px;
+    }
+
+    .nav-brand {
+      font-family: var(--mono);
+      font-size: clamp(9px, 2.5vw, 11px);
+      letter-spacing: 3px; color: var(--gold-bright);
+      text-shadow: 0 0 12px rgba(201,168,76,.4);
+      text-decoration: none; font-weight: 500;
+      /* Prevent brand from eating all space on tiny screens */
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-width: 42vw;
+    }
+
+    /* Desktop links — hidden on mobile, shown via media query */
+    .nav-links {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-link-item {
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 1.5px; color: var(--text-muted);
+      text-decoration: none; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 6px;
+      border: 1px solid transparent; transition: all .2s;
+      white-space: nowrap;
+    }
+    .nav-link-item:hover,
+    .nav-link-item.active {
+      color: var(--gold-bright);
+      background: var(--gold-dim);
+      border-color: var(--gold-border);
+    }
+
+    .nav-cta {
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 7px 18px; border-radius: 8px;
+      background: linear-gradient(135deg,var(--gold),#a07830);
+      color: var(--bg); text-decoration: none;
+      box-shadow: 0 4px 16px rgba(201,168,76,.25);
+      transition: all .2s; white-space: nowrap; flex-shrink: 0;
+    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,168,76,.4); }
+
+    /* Hamburger button — hidden on desktop */
+    .nav-hamburger {
+      display: none; /* shown via media query below */
+      flex-shrink: 0;
+      width: 38px; height: 38px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-muted); font-size: 18px;
+      transition: all .2s;
+    }
+    .nav-hamburger:hover {
+      border-color: var(--gold-border);
+      color: var(--gold-bright);
+      background: var(--gold-dim);
+    }
+
+    /* ══════════════════════════════════════════════════
+       MOBILE DRAWER
+       Uses transform instead of display:none so the
+       slide transition actually plays.
+    ══════════════════════════════════════════════════ */
+
+    /* Dim overlay behind the open drawer */
+    .drawer-overlay {
+      position: fixed; inset: 0; z-index: 600;
+      background: rgba(3,2,14,0.72);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s var(--ease-out);
+    }
+    .drawer-overlay.open {
+      opacity: 1; pointer-events: all;
+    }
+
+    /* The drawer panel */
+    .drawer {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--drawer-w); z-index: 700;
+      background: rgba(7,6,26,0.98);
+      border-right: 1px solid var(--gold-border);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      /* Flex column so footer pins to bottom */
+      display: flex; flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform .35s var(--ease-out);
+      will-change: transform;
+    }
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    /* Drawer header row */
+    .drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 18px; height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .drawer-brand {
+      font-family: var(--mono); font-size: 11px;
+      letter-spacing: 3px; color: var(--gold-bright);
+      text-decoration: none; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;
+    }
+    .drawer-close {
+      width: 30px; height: 30px; border-radius: 6px;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-muted); font-size: 14px;
+      transition: all .2s; flex-shrink: 0;
+    }
+    .drawer-close:hover {
+      border-color: var(--magenta); color: var(--magenta); background: var(--magenta-dim);
+    }
+
+    /* Scrollable link area — flex:1 so it takes remaining space */
+    .drawer-body {
+      flex: 1; overflow-y: auto;
+      padding: 14px 10px;
+      /* Custom scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color: var(--gold-border) transparent;
+    }
+    .drawer-body::-webkit-scrollbar { width: 4px; }
+    .drawer-body::-webkit-scrollbar-thumb { background: var(--gold-border); border-radius: 2px; }
+
+    .drawer-link {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 11px;
+      letter-spacing: 1.5px; color: var(--text-muted);
+      text-decoration: none; text-transform: uppercase;
+      padding: 12px 14px; border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all .2s; margin-bottom: 4px;
+    }
+    .drawer-link i { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+    .drawer-link:hover,
+    .drawer-link.active {
+      color: var(--gold-bright);
+      background: var(--gold-dim);
+      border-color: var(--gold-border);
+    }
+
+    /* ── Pinned footer inside drawer ──
+       margin-top:auto on the first item here is what
+       keeps these glued to the bottom, not hard-coded bottom:0 */
+    .drawer-footer {
+      flex-shrink: 0;
+      padding: 14px 10px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .dfooter-btn {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 10px 14px; border-radius: 8px;
+      border: 1px solid; cursor: pointer;
+      text-decoration: none; transition: all .2s;
+      background: none; width: 100%;
+      font-family: var(--mono);
+    }
+    .dfooter-btn.dashboard {
+      border-color: var(--gold-border); color: var(--gold-bright); background: var(--gold-dim);
+    }
+    .dfooter-btn.dashboard:hover { background: rgba(201,168,76,.22); }
+    .dfooter-btn.change-pass {
+      border-color: rgba(0,255,224,.2); color: var(--cyan); background: var(--cyan-dim);
+    }
+    .dfooter-btn.change-pass:hover { background: rgba(0,255,224,.18); }
+    .dfooter-btn.logout {
+      border-color: rgba(255,45,120,.3); color: var(--magenta); background: var(--magenta-dim);
+    }
+    .dfooter-btn.logout:hover { background: rgba(255,45,120,.2); }
+    .dfooter-btn.login {
+      border-color: rgba(0,255,224,.2); color: var(--cyan); background: var(--cyan-dim);
+    }
+    .dfooter-btn.login:hover { background: rgba(0,255,224,.18); }
+
+    /* ══════════════════════════════════════════════════
+       TOAST ALERTS
+    ══════════════════════════════════════════════════ */
+    .toast-wrap {
+      position: fixed;
+      top: calc(var(--nav-h) + 10px);
+      right: 16px; z-index: 2000;
+      display: flex; flex-direction: column; gap: 8px;
+      /* Never wider than the viewport */
+      max-width: min(340px, calc(100vw - 32px));
+    }
+    .toast-nova {
+      background: rgba(7,6,26,.96); border: 1px solid; border-radius: 10px;
+      padding: 12px 18px; font-family: var(--mono); font-size: 11px;
+      backdrop-filter: blur(16px);
+      display: flex; align-items: center; gap: 10px;
+      animation: toastIn .3s ease-out;
+    }
+    .toast-success  { border-color: rgba(34,197,94,.3);  color: #4ade80; }
+    .toast-error,
+    .toast-danger   { border-color: rgba(255,45,120,.3); color: var(--magenta); }
+    .toast-info     { border-color: rgba(0,255,224,.2);  color: var(--cyan); }
+    .toast-warning  { border-color: var(--gold-border);  color: var(--gold-bright); }
+    @keyframes toastIn {
+      from { transform: translateX(110%); opacity: 0; }
+      to   { transform: translateX(0);   opacity: 1; }
+    }
+
+    /* ══════════════════════════════════════════════════
+       MAIN LAYOUT
+    ══════════════════════════════════════════════════ */
+    main {
+      padding-top: var(--nav-h);
+      position: relative; z-index: 2;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SECTIONS — universal padding via CSS var
+    ══════════════════════════════════════════════════ */
+    section {
+      padding: var(--pad-y) var(--pad-x);
+    }
+    section + section { border-top: 1px solid var(--border); }
+
+    .section-eyebrow {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .eyebrow-line {
+      height: 1px; width: 32px; flex-shrink: 0;
+      background: linear-gradient(90deg,var(--gold),transparent);
+    }
+    .eyebrow-text {
+      font-family: var(--mono); font-size: 10px; color: var(--gold);
+      letter-spacing: 3px; text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(201,168,76,.5);
+    }
+
+    .section-title-wrap {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: clamp(24px,4vw,48px);
+      gap: 12px; flex-wrap: wrap;
+    }
+    .section-num { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 2px; margin-right: 12px; }
+    .section-h2 {
+      font-size: clamp(22px,3.5vw,42px);
+      font-weight: 800; letter-spacing: -1.5px; line-height: 1;
+    }
+    .section-h2 .acc {
+      background: linear-gradient(135deg,var(--gold-bright),var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .section-all {
+      font-family: var(--mono); font-size: 10px; color: var(--text-muted);
+      letter-spacing: 2px; text-decoration: none; text-transform: uppercase;
+      transition: color .2s; white-space: nowrap; flex-shrink: 0;
+    }
+    .section-all:hover { color: var(--gold); }
+
+    /* ══════════════════════════════════════════════════
+       REVEAL ANIMATION
+    ══════════════════════════════════════════════════ */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s cubic-bezier(.23,1,.32,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ══════════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: clamp(18px,3vw,32px) var(--pad-x);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+      position: relative; z-index: 2;
+    }
+    .footer-left {
+      font-family: var(--mono); font-size: 10px;
+      color: var(--text-muted); letter-spacing: 1px;
+    }
+    .footer-right {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .footer-social {
+      width: 34px; height: 34px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 14px; text-decoration: none;
+      transition: all .2s;
+    }
+    .footer-social:hover {
+      border-color: var(--gold-border); color: var(--gold-bright); background: var(--gold-dim);
+    }
+    .footer-login {
+      font-family: var(--mono); font-size: 9px; color: var(--text-muted);
+      letter-spacing: 1px; text-decoration: none; transition: color .2s;
+    }
+    .footer-login:hover { color: var(--gold); }
+
+    /* ══════════════════════════════════════════════════
+       RESPONSIVE BREAKPOINTS
+    ══════════════════════════════════════════════════ */
+    /* Mobile: hide desktop links, show hamburger */
+    @media (max-width: 900px) {
+      .nav-links,
+      .nav-cta   { display: none !important; }
+      .nav-hamburger { display: flex; }
+    }
+
+    /* Desktop: drawer is completely removed from rendering */
+    @media (min-width: 901px) {
+      .drawer,
+      .drawer-overlay { display: none !important; }
+    }
+
+    {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+
+<!-- Custom cursor (JS activates only on hover-capable devices) -->
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- Cosmos background -->
+<div id="cosmos">
+  <div class="neb neb-1"></div>
+  <div class="neb neb-2"></div>
+  <div class="neb neb-3"></div>
+  <div class="neb neb-4"></div>
+  <div class="cring cr1"></div>
+  <div class="cring cr2"></div>
+  <div class="cring cr3"></div>
+</div>
+
+<!-- ── MOBILE DRAWER ──────────────────────────────── -->
+<div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+
+<aside class="drawer" id="drawer" role="dialog" aria-label="Site navigation" aria-modal="true">
+
+  <div class="drawer-header">
+    <a href="{% url 'ptfapp1:home' user_obj.username %}" class="drawer-brand">
+      {{ profile.full_name|default:"GetMyDoss" }}
+    </a>
+    <button class="drawer-close" id="drawerClose" aria-label="Close navigation menu">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- Scrollable link area -->
+  <nav class="drawer-body" aria-label="Mobile navigation links">
+    <a href="#about"   class="drawer-link"><i class="bi bi-person-circle"></i>About</a>
+    <a href="#skills"  class="drawer-link"><i class="bi bi-lightning-charge"></i>Skills</a>
+    {% if social_links %}
+    <a href="#social-links" class="drawer-link"><i class="bi bi-share-fill"></i>Connect</a>
+    {% endif %}
+    {% if featured_projects %}
+    <a href="#projects" class="drawer-link"><i class="bi bi-folder2-open"></i>Projects</a>
+    {% endif %}
+    <a href="#contact" class="drawer-link"><i class="bi bi-envelope-fill"></i>Contact</a>
+  </nav>
+
+  <!-- Pinned bottom actions — always visible, never scroll away -->
+  <div class="drawer-footer">
+    {% if request.user.is_authenticated %}
+      <a href="{% url 'ptfapp2:dashboard' %}"      class="dfooter-btn dashboard">
+        <i class="bi bi-speedometer2"></i>Dashboard
+      </a>
+      <a href="{% url 'ptfapp2:password_change' %}" class="dfooter-btn change-pass">
+        <i class="bi bi-key"></i>Change Password
+      </a>
+      <a href="{% url 'ptfapp2:logout' %}"          class="dfooter-btn logout">
+        <i class="bi bi-box-arrow-right"></i>Logout
+      </a>
+    {% else %}
+      <a href="{% url 'ptfapp2:login' %}" class="dfooter-btn login">
+        <i class="bi bi-box-arrow-in-right"></i>Login
+      </a>
+    {% endif %}
+  </div>
+
+</aside>
+<!-- ─────────────────────────────────────────────── -->
+
+<!-- Navbar -->
+<nav class="site-nav" id="siteNav">
+  <a href="{% if request.user.is_authenticated %}{% url 'ptfapp1:home' user_obj.username %}{% else %}{% url 'ptfapp2:login' %}{% endif %}" class="nav-brand">
+    GetMyDoss
+  </a>
+
+  <!-- Desktop links -->
+  <div class="nav-links">
+    <a href="#about"   class="nav-link-item">About</a>
+    <a href="#skills"  class="nav-link-item">Skills</a>
+    {% if social_links %}
+    <a href="#social-links" class="nav-link-item">Connect</a>
+    {% endif %}
+    {% if featured_projects %}
+    <a href="#projects" class="nav-link-item">Projects</a>
+    {% endif %}
+    <a href="#contact" class="nav-link-item">Contact</a>
+  </div>
+
+  <!-- Right cluster: CTA + hamburger (hamburger hidden ≥901px via CSS) -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'ptfapp2:dashboard' %}" class="nav-cta">Dashboard →</a>
+    {% endif %}
+    <button
+      class="nav-hamburger"
+      id="hamburgerBtn"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="drawer">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+</nav>
+
+<!-- Toast alerts -->
+{% if messages %}
+<div class="toast-wrap" role="alert" aria-live="polite">
+  {% for message in messages %}
+  <div class="toast-nova toast-{{ message.tags }}">
+    <i class="bi bi-{% if message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  <div class="footer-left">
+    © {% now "Y" %} {{ profile.full_name|default:"Portfolio" }} —
+    Crafted with <span style="color:var(--gold)">✦</span> intention  
+  </div>
+  <div class="footer-right">
+    
+    <a href="{% url 'ptfapp2:login' %}" class="footer-login">Login</a>
+  </div>
+</footer>
+
+<script>
+/* ── Custom cursor — only on hover-capable devices ── */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const c=document.getElementById('cur'), r=document.getElementById('cur-ring');
+  c.style.display='block'; r.style.display='block';
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    c.style.left=mx+'px'; c.style.top=my+'px';
+  });
+  (function loop(){
+    rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+    r.style.left=rx+'px'; r.style.top=ry+'px';
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ── Star field ── */
+(function(){
+  const cosmos=document.getElementById('cosmos');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`
+      position:absolute;border-radius:50%;
+      width:${sz}px;height:${sz}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      background:#fff;
+      opacity:${.1+Math.random()*.7};
+      animation:twinkle ${2+Math.random()*4}s ease-in-out ${Math.random()*4}s infinite alternate;
+    `;
+    cosmos.appendChild(s);
+  }
+  const ks=document.createElement('style');
+  ks.textContent='@keyframes twinkle{from{opacity:.1;transform:scale(.8)}to{opacity:.9;transform:scale(1.2)}}';
+  document.head.appendChild(ks);
+})();
+
+/* ── Drawer / hamburger ── */
+(function(){
+  const btn     = document.getElementById('hamburgerBtn');
+  const drawer  = document.getElementById('drawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const closeBtn= document.getElementById('drawerClose');
+  if(!btn || !drawer) return;
+
+  function openDrawer(){
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    btn.setAttribute('aria-expanded','true');
+    overlay.removeAttribute('aria-hidden');
+    document.body.style.overflow='hidden'; /* prevent background scroll */
+    closeBtn.focus();
+  }
+
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    btn.setAttribute('aria-expanded','false');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+    btn.focus();
+  }
+
+  btn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  /* Close when any nav link inside drawer is tapped */
+  drawer.querySelectorAll('.drawer-link').forEach(l=>{
+    l.addEventListener('click', closeDrawer);
+  });
+
+  /* Escape key closes drawer */
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer();
+  });
+})();
+
+/* ── Reveal on scroll ── */
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.1, rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+/* ── Active nav link on scroll ── */
+const sObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      /* Mark both desktop and drawer links active */
+      document.querySelectorAll('.nav-link-item, .drawer-link').forEach(n=>n.classList.remove('active'));
+      document.querySelectorAll(`[href="#${e.target.id}"]`).forEach(a=>a.classList.add('active'));
+    }
+  });
+},{threshold:.4});
+document.querySelectorAll('section[id]').forEach(s=>sObs.observe(s));
+
+/* ── Auto-dismiss toasts ── */
+setTimeout(()=>{
+  document.querySelectorAll('.toast-nova').forEach(t=>{
+    t.style.transition='opacity .5s ease';
+    t.style.opacity='0';
+    setTimeout(()=>t.remove(), 500);
+  });
+}, 4000);
+
+{% block extra_js %}{% endblock %}
+</script>
+</body>
+</html>

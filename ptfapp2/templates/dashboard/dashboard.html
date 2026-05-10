@@ -1,0 +1,338 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Overview{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">Overview <span class="accent">Dashboard</span></h1>
+  </div>
+  <a href="{% url 'ptfapp1:home' request.user.username %}" target="_blank" class="btn-nova btn-nova-ghost">
+    <i class="bi bi-box-arrow-up-right"></i> View Portfolio
+  </a>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     THEME PICKER
+     Cards use auto-fit grid: 3 across on desktop,
+     wrap to 1 on mobile automatically.
+══════════════════════════════════════════════════ -->
+<div class="nova-card" style="margin-bottom:24px;position:relative;overflow:hidden;">
+  <!-- Top accent line -->
+  <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--cyan),transparent);"></div>
+
+  <div class="nova-card-header">
+    <span>Portfolio Theme</span>
+    <span style="font-size:9px;color:var(--text-dim);">
+      Active: <span id="activeThemeLabel" style="color:var(--gold-bright);">{{ request.user.site_profile.theme|title }}</span>
+      &nbsp;/&nbsp;
+      <span id="activeModeLabel" style="color:var(--cyan);">{{ request.user.site_profile.theme_mode|title }}</span> mode
+    </span>
+  </div>
+
+  <div style="padding:16px;">
+
+    <!-- Theme cards — auto-fit so they wrap on small screens -->
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    ">
+
+      <!-- FeelNova -->
+      <div class="theme-card {% if request.user.site_profile.theme == 'feelnova' %}theme-card-active{% endif %}"
+           data-theme="feelnova" data-label="FeelNova"
+           onclick="selectTheme('feelnova','FeelNova')"
+           style="cursor:pointer;border-radius:12px;border:1px solid rgba(240,180,41,0.25);overflow:hidden;transition:all .25s;position:relative;">
+        <div style="height:80px;background:linear-gradient(135deg,#0b0c1c,#10112a);padding:10px;display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-10px;right:-10px;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,rgba(240,180,41,0.3),transparent);"></div>
+          <div style="position:absolute;bottom:-10px;left:8px;width:35px;height:35px;border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,0.2),transparent);"></div>
+          <div style="display:flex;gap:4px;">
+            <div style="height:3px;width:28px;border-radius:2px;background:#f0b429;"></div>
+            <div style="height:3px;width:16px;border-radius:2px;background:rgba(255,255,255,0.1);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:3px;">
+            <div style="height:16px;border-radius:4px;background:rgba(240,180,41,0.15);border:0.5px solid rgba(240,180,41,0.3);"></div>
+            <div style="height:16px;border-radius:4px;background:rgba(6,182,212,0.1);border:0.5px solid rgba(6,182,212,0.3);"></div>
+          </div>
+          <div style="height:3px;width:100%;border-radius:2px;background:rgba(255,255,255,0.05);margin-top:auto;">
+            <div style="height:100%;width:65%;border-radius:2px;background:linear-gradient(90deg,#f0b429,#f5c842);"></div>
+          </div>
+        </div>
+        <div style="padding:9px 12px;background:#10112a;">
+          <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:#f0b429;letter-spacing:1px;">FeelNova</div>
+          <div style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,0.4);margin-top:2px;">Gold · Cyan · Dark Cosmos</div>
+        </div>
+        <div class="theme-check" style="position:absolute;top:7px;right:7px;width:18px;height:18px;border-radius:50%;background:#f0b429;display:{% if request.user.site_profile.theme == 'feelnova' %}flex{% else %}none{% endif %};align-items:center;justify-content:center;">
+          <i class="bi bi-check" style="font-size:11px;color:#0b0c1c;font-weight:900;"></i>
+        </div>
+      </div>
+
+      <!-- Aurora -->
+      <div class="theme-card {% if request.user.site_profile.theme == 'aurora' %}theme-card-active{% endif %}"
+           data-theme="aurora" data-label="Aurora"
+           onclick="selectTheme('aurora','Aurora')"
+           style="cursor:pointer;border-radius:12px;border:1px solid rgba(16,185,129,0.25);overflow:hidden;transition:all .25s;position:relative;">
+        <div style="height:80px;background:linear-gradient(135deg,#030f0a,#071a10);padding:10px;display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-10px;right:-10px;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.3),transparent);"></div>
+          <div style="position:absolute;bottom:-10px;left:8px;width:35px;height:35px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,0.2),transparent);"></div>
+          <div style="display:flex;gap:4px;">
+            <div style="height:3px;width:28px;border-radius:2px;background:#10b981;"></div>
+            <div style="height:3px;width:16px;border-radius:2px;background:rgba(255,255,255,0.1);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:3px;">
+            <div style="height:16px;border-radius:4px;background:rgba(16,185,129,0.15);border:0.5px solid rgba(16,185,129,0.3);"></div>
+            <div style="height:16px;border-radius:4px;background:rgba(167,139,250,0.1);border:0.5px solid rgba(167,139,250,0.3);"></div>
+          </div>
+          <div style="height:3px;width:100%;border-radius:2px;background:rgba(255,255,255,0.05);margin-top:auto;">
+            <div style="height:100%;width:50%;border-radius:2px;background:linear-gradient(90deg,#10b981,#34d399);"></div>
+          </div>
+        </div>
+        <div style="padding:9px 12px;background:#071a10;">
+          <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:#10b981;letter-spacing:1px;">Aurora</div>
+          <div style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,0.4);margin-top:2px;">Emerald · Violet · Deep Forest</div>
+        </div>
+        <div class="theme-check" style="position:absolute;top:7px;right:7px;width:18px;height:18px;border-radius:50%;background:#10b981;display:{% if request.user.site_profile.theme == 'aurora' %}flex{% else %}none{% endif %};align-items:center;justify-content:center;">
+          <i class="bi bi-check" style="font-size:11px;color:#030f0a;font-weight:900;"></i>
+        </div>
+      </div>
+
+      <!-- Crimson -->
+      <div class="theme-card {% if request.user.site_profile.theme == 'crimson' %}theme-card-active{% endif %}"
+           data-theme="crimson" data-label="Crimson"
+           onclick="selectTheme('crimson','Crimson')"
+           style="cursor:pointer;border-radius:12px;border:1px solid rgba(239,68,68,0.25);overflow:hidden;transition:all .25s;position:relative;">
+        <div style="height:80px;background:linear-gradient(135deg,#0d0505,#1a0808);padding:10px;display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-10px;right:-10px;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,rgba(239,68,68,0.3),transparent);"></div>
+          <div style="position:absolute;bottom:-10px;left:8px;width:35px;height:35px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.2),transparent);"></div>
+          <div style="display:flex;gap:4px;">
+            <div style="height:3px;width:28px;border-radius:2px;background:#ef4444;"></div>
+            <div style="height:3px;width:16px;border-radius:2px;background:rgba(255,255,255,0.1);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:3px;">
+            <div style="height:16px;border-radius:4px;background:rgba(239,68,68,0.15);border:0.5px solid rgba(239,68,68,0.3);"></div>
+            <div style="height:16px;border-radius:4px;background:rgba(245,158,11,0.1);border:0.5px solid rgba(245,158,11,0.3);"></div>
+          </div>
+          <div style="height:3px;width:100%;border-radius:2px;background:rgba(255,255,255,0.05);margin-top:auto;">
+            <div style="height:100%;width:80%;border-radius:2px;background:linear-gradient(90deg,#ef4444,#f87171);"></div>
+          </div>
+        </div>
+        <div style="padding:9px 12px;background:#1a0808;">
+          <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:#ef4444;letter-spacing:1px;">Crimson</div>
+          <div style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,0.4);margin-top:2px;">Red · Amber · Dark Industrial</div>
+        </div>
+        <div class="theme-check" style="position:absolute;top:7px;right:7px;width:18px;height:18px;border-radius:50%;background:#ef4444;display:{% if request.user.site_profile.theme == 'crimson' %}flex{% else %}none{% endif %};align-items:center;justify-content:center;">
+          <i class="bi bi-check" style="font-size:11px;color:#0d0505;font-weight:900;"></i>
+        </div>
+      </div>
+
+    </div><!-- /theme cards grid -->
+
+    <!-- Mode toggle + save -->
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;flex-wrap:wrap;">
+      <span style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;white-space:nowrap;">Mode</span>
+      <div style="display:flex;gap:8px;">
+        <button onclick="selectMode('dark')" id="btnDark"
+          class="btn-nova {% if request.user.site_profile.theme_mode == 'dark' %}btn-nova-gold{% else %}btn-nova-ghost{% endif %}"
+          style="font-size:9px;padding:6px 14px;">
+          <i class="bi bi-moon-stars"></i> Dark
+        </button>
+        <button onclick="selectMode('gray')" id="btnGray"
+          class="btn-nova {% if request.user.site_profile.theme_mode == 'gray' %}btn-nova-gold{% else %}btn-nova-ghost{% endif %}"
+          style="font-size:9px;padding:6px 14px;">
+          <i class="bi bi-circle-half"></i> Gray
+        </button>
+      </div>
+      <div style="margin-left:auto;">
+        <button onclick="saveTheme()" class="btn-nova btn-nova-gold" style="font-size:9px;padding:7px 18px;" id="btnSave">
+          <i class="bi bi-check-circle"></i> Save Theme
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /padding wrapper -->
+</div>
+<!-- ── END THEME PICKER ── -->
+
+<!-- ══════════════════════════════════════════════════
+     STAT GRID
+     Already uses auto-fit — kept as-is, just cleaned up.
+══════════════════════════════════════════════════ -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px;">
+
+  <div class="nova-card" style="padding:18px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,224,0.12),transparent);"></div>
+    <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;">Documents</div>
+    <div style="font-size:clamp(28px,5vw,36px);font-weight:800;letter-spacing:-2px;background:linear-gradient(135deg,var(--cyan),rgba(0,255,224,0.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;">{{ total_documents }}</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:4px;">uploaded files</div>
+  </div>
+
+  <div class="nova-card" style="padding:18px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.12),transparent);"></div>
+    <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;">Downloads</div>
+    <div style="font-size:clamp(28px,5vw,36px);font-weight:800;letter-spacing:-2px;background:linear-gradient(135deg,var(--gold-bright),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;">{{ total_downloads }}</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:4px;">all time</div>
+  </div>
+
+  <div class="nova-card" style="padding:18px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.12),transparent);"></div>
+    <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;">This Week</div>
+    <div style="font-size:clamp(28px,5vw,36px);font-weight:800;letter-spacing:-2px;color:#a78bfa;line-height:1;">{{ downloads_this_week }}</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:4px;">downloads</div>
+  </div>
+
+  <div class="nova-card" style="padding:18px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(255,45,120,0.12),transparent);"></div>
+    <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;">Projects</div>
+    <div style="font-size:clamp(28px,5vw,36px);font-weight:800;letter-spacing:-2px;color:var(--magenta);line-height:1;">{{ total_projects }}</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:4px;">in portfolio</div>
+  </div>
+
+  <div class="nova-card" style="padding:18px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.1),transparent);"></div>
+    <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;">Messages</div>
+    <div style="font-size:clamp(28px,5vw,36px);font-weight:800;letter-spacing:-2px;background:linear-gradient(135deg,var(--gold-bright),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;">{{ total_messages }}</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:4px;">received</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     QUICK ACTIONS
+══════════════════════════════════════════════════ -->
+<div style="margin-bottom:24px;">
+  <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;">Quick Actions</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="{% url 'ptfapp2:profile_form' %}"      class="btn-nova btn-nova-gold"><i class="bi bi-person"></i> Edit Profile</a>
+    <a href="{% url 'ptfapp2:projects_list' %}"     class="btn-nova btn-nova-ghost"><i class="bi bi-folder2-open"></i> Projects</a>
+    <a href="{% url 'ptfapp2:skills_list' %}"       class="btn-nova btn-nova-ghost"><i class="bi bi-star"></i> Skills</a>
+    <a href="{% url 'ptfapp2:documents_list' %}"    class="btn-nova btn-nova-ghost"><i class="bi bi-file-earmark"></i> Documents</a>
+    <a href="{% url 'ptfapp2:messages_list' %}"     class="btn-nova btn-nova-ghost"><i class="bi bi-envelope"></i> Messages</a>
+    <a href="{% url 'ptfapp2:social_links_list' %}" class="btn-nova btn-nova-ghost"><i class="bi bi-share"></i> Social</a>
+    <a href="{% url 'ptfapp2:short_links_list' %}"  class="btn-nova btn-nova-ghost"><i class="bi bi-link-45deg"></i> Short Links</a>
+    {% if request.user.is_superuser %}
+    <a href="{% url 'ptfapp2:couser_list' %}"       class="btn-nova btn-nova-cyan"><i class="bi bi-people"></i> Co-Users</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     RECENT MESSAGES
+══════════════════════════════════════════════════ -->
+<div class="nova-card" style="margin-bottom:20px;">
+  <div class="nova-card-header">
+    <span>Recent Messages</span>
+    <a href="{% url 'ptfapp2:messages_list' %}" class="btn-nova btn-nova-ghost btn-sm">View All</a>
+  </div>
+  {% if recent_messages %}
+  <div style="overflow-x:auto;">
+    <table class="nova-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th class="col-hide">Email</th>
+          <th class="col-hide">Subject</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for msg in recent_messages %}
+        <tr>
+          <td><span class="primary-text">{{ msg.name }}</span></td>
+          <td class="col-hide">{{ msg.email }}</td>
+          <td class="col-hide">{{ msg.subject }}</td>
+          <td><span style="font-family:var(--mono);font-size:11px;">{{ msg.created_at|date:"M d, Y" }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">✉</div>
+    <div class="empty-state-text">No messages yet</div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Co-users (superuser only) -->
+{% if co_users %}
+<div class="nova-card">
+  <div class="nova-card-header"><span>Co-Users</span></div>
+  <div style="overflow-x:auto;">
+    <table class="nova-table">
+      <thead>
+        <tr><th>Username</th><th class="col-hide">Email</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for cu in co_users %}
+        <tr>
+          <td><span class="primary-text">{{ cu.username }}</span></td>
+          <td class="col-hide">{{ cu.email }}</td>
+          <td style="white-space:nowrap;">
+            <a href="{% url 'ptfapp1:home' cu.username %}" class="btn-nova btn-nova-cyan btn-sm" target="_blank"><i class="bi bi-eye"></i> View</a>
+            <a href="{% url 'ptfapp2:couser_edit' cu.pk %}"  class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- ══════════════════════════════════════════════════
+     THEME PICKER JAVASCRIPT
+     (kept exactly as original — no logic changed)
+══════════════════════════════════════════════════ -->
+<script>
+let selectedTheme = '{{ request.user.site_profile.theme }}';
+let selectedMode  = '{{ request.user.site_profile.theme_mode }}';
+
+function selectTheme(theme, label) {
+  selectedTheme = theme;
+  document.querySelectorAll('.theme-check').forEach(c => c.style.display = 'none');
+  document.querySelectorAll('.theme-card').forEach(c => { c.style.transform = ''; c.style.boxShadow = ''; });
+  const card = document.querySelector(`[data-theme="${theme}"]`);
+  if (card) {
+    card.querySelector('.theme-check').style.display = 'flex';
+    card.style.transform = 'translateY(-3px)';
+    card.style.boxShadow = '0 8px 24px rgba(0,0,0,0.4)';
+  }
+  document.getElementById('activeThemeLabel').textContent = label;
+}
+
+function selectMode(mode) {
+  selectedMode = mode;
+  document.getElementById('btnDark').className = `btn-nova ${mode==='dark' ? 'btn-nova-gold' : 'btn-nova-ghost'}`;
+  document.getElementById('btnGray').className = `btn-nova ${mode==='gray' ? 'btn-nova-gold' : 'btn-nova-ghost'}`;
+  document.getElementById('activeModeLabel').textContent = mode.charAt(0).toUpperCase()+mode.slice(1);
+}
+
+function saveTheme() {
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass"></i> Saving…';
+  fetch('{% url "ptfapp2:save_theme" %}', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+    body: JSON.stringify({ theme: selectedTheme, mode: selectedMode }),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      localStorage.setItem('ptf_theme', selectedTheme);
+      localStorage.setItem('ptf_mode', selectedMode);
+      btn.innerHTML = '<i class="bi bi-check-circle"></i> Saved!';
+      setTimeout(() => { btn.disabled=false; btn.innerHTML='<i class="bi bi-check-circle"></i> Save Theme'; }, 2000);
+    }
+  })
+  .catch(() => { btn.disabled=false; btn.innerHTML='<i class="bi bi-exclamation-circle"></i> Error'; });
+}
+</script>
+
+{% endblock %}

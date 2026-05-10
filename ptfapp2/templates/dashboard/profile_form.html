@@ -1,0 +1,91 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Edit Profile{% endblock %}
+{% block nav_profile %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">Edit <span class="accent">Profile</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:profile_page' %}" class="btn-nova btn-nova-ghost"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="nova-card" style="max-width:720px;">
+  <div class="nova-card-header"><span>Profile Details</span></div>
+  <div class="nova-card-header"><span> This is a public profile ,Share info wisely. </span> 
+    <br>
+    <br>
+    <span>Be Aware About what you are sharing !!</span></div>
+  <div style="padding:24px;">
+    <form method="post" enctype="multipart/form-data" class="form-nova">
+      {% csrf_token %}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          {{ form.full_name }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job Title</label>
+          {{ form.job_title }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Bio</label>
+        {{ form.bio }}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group">
+          <label class="form-label">Profile Image</label>
+          {% if form.instance.profile_image %}
+          <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+            <img src="{{ form.instance.profile_image.url }}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid var(--gold-border);">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim);">Current photo</span>
+          </div>
+          {% endif %}
+          {{ form.profile_image }}
+        </div>
+        
+         
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">CV / Resume File</label>
+        {% if form.instance.cv_file %}
+        <div style="margin-bottom:10px;"><a href="{{ form.instance.cv_file.url }}" target="_blank" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-file-earmark"></i> View Current</a></div>
+        {% endif %}
+        {{ form.cv_file }}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group">
+          <label class="form-label">Contact Email</label>
+          {{ form.email }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone.. Optional ! Keep it Private .</label>
+          {{ form.phone }}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr auto;gap:16px;">
+        <div class="form-group">
+          <label class="form-label">Address</label>
+          {{ form.address }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pincode</label>
+          {{ form.pincode }}
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;padding-top:8px;">
+        <button type="submit" class="btn-nova btn-nova-gold"><i class="bi bi-check-lg"></i> Save Profile</button>
+        <a href="{% url 'ptfapp2:dashboard' %}" class="btn-nova btn-nova-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

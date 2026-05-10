@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Projects — {{ profile.full_name }}{% endblock %}
+
+{% block extra_css %}
+.projects-hero { padding:60px 60px 40px;text-align:center;position:relative; }
+.projects-hero::after { content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+
+.projects-wrap { padding:48px 60px 80px;max-width:1200px;margin:0 auto; }
+
+.proj-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:40px; }
+
+.proj-card-full {
+  border-radius:14px;border:1px solid var(--border);
+  background:var(--surface);overflow:hidden;
+  transition:all .4s cubic-bezier(.23,1,.32,1);
+  display:flex;flex-direction:column;
+}
+.proj-card-full:hover { border-color:var(--gold-border);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(201,168,76,.1); }
+
+.proj-thumb {
+  height:180px;overflow:hidden;position:relative;
+  background:radial-gradient(ellipse at 30% 40%,#12082a,#030212);
+  display:flex;align-items:center;justify-content:center;
+}
+.proj-thumb img { width:100%;height:100%;object-fit:cover;transition:transform .4s; }
+.proj-card-full:hover .proj-thumb img { transform:scale(1.05); }
+.proj-thumb-icon { font-size:44px;opacity:.12; }
+.feat-badge {
+  position:absolute;top:12px;left:12px;
+  font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;
+  background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold-bright);
+}
+
+.proj-body { padding:18px;flex:1;display:flex;flex-direction:column; }
+.proj-tags-row { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px; }
+.proj-t { font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim); }
+.proj-title { font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.3px;margin-bottom:6px; }
+.proj-excerpt { font-size:12px;color:var(--text-muted);line-height:1.6;flex:1;margin-bottom:14px; }
+.proj-actions { display:flex;gap:8px;margin-top:auto; }
+.proj-btn {
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  padding:6px 14px;border-radius:6px;border:1px solid;text-decoration:none;transition:all .2s;
+}
+.pb-cyan { border-color:rgba(0,255,224,.2);color:var(--cyan);background:var(--cyan-dim); }
+.pb-cyan:hover { background:rgba(0,255,224,.18);border-color:rgba(0,255,224,.4); }
+.pb-ghost { border-color:var(--border);color:var(--text-muted);background:var(--surface); }
+.pb-ghost:hover { border-color:var(--gold-border);color:var(--gold-bright);background:var(--gold-dim); }
+
+/* Pagination */
+.pagination-nova { display:flex;justify-content:center;align-items:center;gap:8px;margin-top:40px; }
+.pag-btn {
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;
+  padding:8px 16px;border-radius:8px;text-decoration:none;
+  border:1px solid var(--border);background:var(--surface);color:var(--text-muted);
+  transition:all .2s;
+}
+.pag-btn:hover { border-color:var(--gold-border);color:var(--gold-bright);background:var(--gold-dim); }
+.pag-btn.current { background:var(--gold-dim);border-color:var(--gold-border);color:var(--gold-bright); }
+.pag-btn.disabled { opacity:.3;cursor:default;pointer-events:none; }
+
+.back-btn {
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:9px 20px;border-radius:8px;
+  border:1px solid var(--border);background:var(--surface);color:var(--text-muted);
+  text-decoration:none;transition:all .2s;
+}
+.back-btn:hover { border-color:var(--gold-border);color:var(--gold-bright);background:var(--gold-dim); }
+
+@media (max-width:768px) {
+  .projects-wrap { padding:40px 24px; }
+  .projects-hero { padding:50px 24px 30px; }
+  .proj-grid { grid-template-columns:1fr; }
+}
+{% endblock %}
+
+{% block content %}
+<div class="projects-hero reveal">
+  <div style="font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;text-shadow:0 0 12px rgba(201,168,76,.5);">Portfolio</div>
+  <h1 style="font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-2px;margin-bottom:12px;">
+    All <span style="background:linear-gradient(135deg,var(--gold-bright),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Projects</span>
+  </h1>
+  <p style="font-size:14px;color:var(--text-muted);max-width:400px;margin:0 auto 24px;line-height:1.7;">
+    {{ projects|length }} project{{ projects|length|pluralize }} in the portfolio
+  </p>
+  <a href="{% url 'ptfapp1:home' profile.user.username %}" class="back-btn"><i class="bi bi-arrow-left"></i> Back to Portfolio</a>
+</div>
+
+<div class="projects-wrap">
+  {% if projects %}
+  <div class="proj-grid">
+    {% for project in projects %}
+    <div class="proj-card-full reveal">
+      <div class="proj-thumb">
+        {% if project.featured %}
+        <div class="feat-badge">★ Featured</div>
+        {% endif %}
+        {% if project.image %}
+        <img src="{{ project.image.url }}" alt="{{ project.title }}">
+        {% else %}
+        <div class="proj-thumb-icon"><i class="bi bi-code-slash"></i></div>
+        {% endif %}
+      </div>
+      <div class="proj-body">
+        {% if project.technologies %}
+        <div class="proj-tags-row">
+          {% for tech in project.get_tech_list|slice:":3" %}
+          <span class="proj-t">{{ tech }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="proj-title">{{ project.title }}</div>
+        <div class="proj-excerpt">{{ project.short_description|default:project.full_description|truncatewords:22 }}</div>
+        <div class="proj-actions">
+          {% if project.project_url %}
+          <a href="{{ project.project_url }}" target="_blank" class="proj-btn pb-cyan"><i class="bi bi-box-arrow-up-right"></i> Live Demo</a>
+          {% endif %}
+          {% if project.github_url %}
+          <a href="{{ project.github_url }}" target="_blank" class="proj-btn pb-ghost"><i class="bi bi-github"></i> GitHub</a>
+          {% endif %}
+          {% if project.pdf_file %}
+          <a href="{{ project.pdf_file.url }}" target="_blank" class="proj-btn pb-ghost"><i class="bi bi-file-pdf"></i> PDF</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if is_paginated %}
+  <div class="pagination-nova">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="pag-btn"><i class="bi bi-chevron-left"></i> Prev</a>
+    {% else %}
+    <span class="pag-btn disabled"><i class="bi bi-chevron-left"></i> Prev</span>
+    {% endif %}
+
+    {% for num in paginator.page_range %}
+    {% if page_obj.number == num %}
+    <span class="pag-btn current">{{ num }}</span>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+    <a href="?page={{ num }}" class="pag-btn">{{ num }}</a>
+    {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="pag-btn">Next <i class="bi bi-chevron-right"></i></a>
+    {% else %}
+    <span class="pag-btn disabled">Next <i class="bi bi-chevron-right"></i></span>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div style="text-align:center;padding:80px 20px;">
+    <div style="font-size:40px;opacity:.12;margin-bottom:14px;">◈</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);letter-spacing:1px;">No projects yet</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

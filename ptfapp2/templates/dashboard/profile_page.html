@@ -1,0 +1,131 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}My Profile{% endblock %}
+{% block nav_profile_page %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title"> <span class="accent">My Profile </span>  </h1>- Preview
+  </div>
+  <a href="{% url 'ptfapp2:profile_form' %}" class="btn-nova btn-nova-gold"><i class="bi bi-pencil-square"></i> Edit Profile</a>
+</div>
+
+{% if not profile %}
+<div style="background:rgba(201,168,76,0.06);border:1px dashed var(--gold-border);border-radius:12px;padding:36px;text-align:center;">
+  <div style="font-size:32px;opacity:.3;margin-bottom:12px;">⚠</div>
+  <div style="font-family:var(--mono);font-size:12px;color:var(--gold-bright);margin-bottom:14px;letter-spacing:1px;">Portfolio not set up yet</div>
+  <a href="{% url 'ptfapp2:profile_form' %}" class="btn-nova btn-nova-gold">Create Profile Now</a>
+</div>
+
+{% else %}
+
+<!-- Hero -->
+<div class="nova-card" style="margin-bottom:20px;overflow:hidden;position:relative;">
+  <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),var(--cyan),transparent);"></div>
+  <div style="padding:28px;display:flex;align-items:flex-start;gap:24px;">
+    {% if profile.profile_image %}
+    <img src="{{ profile.profile_image.url }}" alt="{{ profile.full_name }}" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid var(--gold-border);flex-shrink:0;">
+    {% else %}
+    <div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#6d28d9);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:var(--bg);flex-shrink:0;">{{ profile.full_name|first|upper }}</div>
+    {% endif %}
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:24px;font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:4px;">{{ profile.full_name }}</div>
+      {% if profile.job_title %}
+      <div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:14px;">{{ profile.job_title }}</div>
+      {% endif %}
+      <div style="display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:12px;">
+        {% if profile.email %}<span style="font-family:var(--mono);font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:5px;"><i class="bi bi-envelope" style="color:var(--text-dim)"></i>{{ profile.email }}</span>{% endif %}
+        {% if profile.phone %}<span style="font-family:var(--mono);font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:5px;"><i class="bi bi-telephone" style="color:var(--text-dim)"></i>{{ profile.phone }}</span>{% endif %}
+        {% if profile.address %}<span style="font-family:var(--mono);font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:5px;"><i class="bi bi-geo-alt" style="color:var(--text-dim)"></i>{{ profile.address }}</span>{% endif %}
+      </div>
+      {% if profile.bio %}<p style="font-size:13px;color:var(--text-muted);line-height:1.7;max-width:560px;">{{ profile.bio|truncatewords:50 }}</p>{% endif %}
+      {% if social_links %}
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;">
+        {% for link in social_links %}<a href="{{ link.url }}" target="_blank" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-{{ link.icon_filename|default:'link' }}"></i> {{ link.get_platform_display }}</a>{% endfor %}
+      </div>
+      {% endif %}
+      {% if profile.cv_file %}
+      <div style="margin-top:14px;">
+        <a href="{{ profile.cv_file.url }}" download class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-download"></i> Download CV</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px;">
+  {% for label, val in counts.items %}
+  <div class="nova-card" style="padding:18px;text-align:center;">
+    <div style="font-size:28px;font-weight:800;color:var(--gold-bright);letter-spacing:-1px;line-height:1;">{{ val }}</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-top:5px;">{{ label }}</div>
+  </div>
+  {% empty %}
+  <div class="nova-card" style="padding:18px;text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--gold-bright);">{{ skills|length }}</div><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-top:5px;">SKILLS</div></div>
+  <div class="nova-card" style="padding:18px;text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--cyan);">{{ projects|length }}</div><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-top:5px;">PROJECTS</div></div>
+  <div class="nova-card" style="padding:18px;text-align:center;"><div style="font-size:28px;font-weight:800;color:#a78bfa;">{{ documents|length }}</div><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-top:5px;">DOCUMENTS</div></div>
+  <div class="nova-card" style="padding:18px;text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--magenta);">{{ social_links|length }}</div><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-top:5px;">SOCIAL</div></div>
+  {% endfor %}
+</div>
+
+<!-- Skills -->
+{% if skills %}
+<div class="nova-card" style="margin-bottom:16px;">
+  <div class="nova-card-header"><span>Skills</span><a href="{% url 'ptfapp2:skills_list' %}" class="btn-nova btn-nova-ghost btn-sm">Manage →</a></div>
+  <div style="padding:20px;">
+    <div style="margin-bottom:14px;">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;">Technical</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        {% for s in skills %}{% if s.category == 'technical' %}<span class="badge-nova badge-cyan">{{ s.name }}</span>{% endif %}{% endfor %}
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;">Soft Skills</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        {% for s in skills %}{% if s.category == 'soft' %}<span class="badge-nova badge-violet">{{ s.name }}</span>{% endif %}{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Projects -->
+{% if projects %}
+<div class="nova-card" style="margin-bottom:16px;">
+  <div class="nova-card-header"><span>Projects</span><a href="{% url 'ptfapp2:projects_list' %}" class="btn-nova btn-nova-ghost btn-sm">Manage →</a></div>
+  <div style="padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+    {% for proj in projects|slice:":6" %}
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+      {% if proj.featured %}<div style="font-family:var(--mono);font-size:8px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">★ FEATURED</div>{% endif %}
+      <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:4px;">{{ proj.title }}</div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ proj.short_description|default:proj.full_description }}</div>
+      {% if proj.technologies %}<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">{% for tech in proj.get_tech_list|slice:":3" %}<span class="badge-nova badge-muted" style="font-size:8px;">{{ tech }}</span>{% endfor %}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Documents -->
+{% if documents %}
+<div class="nova-card" style="margin-bottom:16px;">
+  <div class="nova-card-header"><span>Documents</span><a href="{% url 'ptfapp2:documents_list' %}" class="btn-nova btn-nova-ghost btn-sm">Manage →</a></div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:8px;">
+    {% for doc in documents %}
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;">
+      <span style="font-size:13px;font-weight:600;color:var(--text);">{{ doc.title }}</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim);">{{ doc.download_count }} download{{ doc.download_count|pluralize }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div style="text-align:center;margin-top:20px;">
+  <a href="{% url 'ptfapp1:home' username=request.user.username %}" target="_blank" class="btn-nova btn-nova-ghost">
+    <i class="bi bi-box-arrow-up-right"></i> View Public Portfolio
+  </a>
+</div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Projects{% endblock %}
+{% block nav_projects %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">My <span class="accent">Projects</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:project_add' %}" class="btn-nova btn-nova-gold">
+    <i class="bi bi-plus-lg"></i> Add Project
+  </a>
+</div>
+
+<div class="nova-card">
+  <div class="nova-card-header"><span>All Projects</span><span style="color:var(--text-dim);">{{ projects|length }} total</span></div>
+  {% if projects %}
+  <table class="nova-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Featured</th>
+        <th>Order</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for project in projects %}
+      <tr>
+        <td><span class="primary-text">{{ project.title }}</span></td>
+        <td>
+          {% if project.featured %}
+            <span class="badge-nova badge-gold">★ Featured</span>
+          {% else %}
+            <span class="badge-nova badge-muted">—</span>
+          {% endif %}
+        </td>
+        <td><span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);">{{ project.order }}</span></td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <a href="{% url 'ptfapp2:project_edit' project.pk %}" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+            <a href="{% url 'ptfapp2:project_delete' project.pk %}" class="btn-nova btn-nova-danger btn-sm" onclick="return confirm('Delete this project?')"><i class="bi bi-trash"></i> Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">◈</div>
+    <div class="empty-state-text">No projects yet — add your first one</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

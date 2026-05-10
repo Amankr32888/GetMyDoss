@@ -1,0 +1,56 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Skills{% endblock %}
+{% block nav_skills %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">My <span class="accent">Skills</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:skill_add' %}" class="btn-nova btn-nova-gold">
+    <i class="bi bi-plus-lg"></i> Add Skill
+  </a>
+</div>
+
+<div class="nova-card">
+  <div class="nova-card-header"><span>All Skills</span><span style="color:var(--text-dim);">{{ skills|length }} total</span></div>
+  {% if skills %}
+  <table class="nova-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Order</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for skill in skills %}
+      <tr>
+        <td><span class="primary-text">{{ skill.name }}</span></td>
+        <td>
+          {% if skill.category == 'technical' %}
+          <span class="badge-nova badge-cyan">Technical</span>
+          {% else %}
+          <span class="badge-nova badge-violet">Soft</span>
+          {% endif %}
+        </td>
+        <td><span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);">{{ skill.order }}</span></td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <a href="{% url 'ptfapp2:skill_edit' skill.pk %}" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+            <a href="{% url 'ptfapp2:skill_delete' skill.pk %}" class="btn-nova btn-nova-danger btn-sm" onclick="return confirm('Delete this skill?')"><i class="bi bi-trash"></i> Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">⬡</div>
+    <div class="empty-state-text">No skills yet — add your first one</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

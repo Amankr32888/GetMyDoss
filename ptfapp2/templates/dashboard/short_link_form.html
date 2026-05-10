@@ -1,0 +1,52 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Short Link{% endblock %}
+{% block nav_shortlinks %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">{% if form.instance.pk %}Edit{% else %}Create{% endif %} <span class="accent">Short Link</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:short_links_list' %}" class="btn-nova btn-nova-ghost"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="nova-card" style="max-width:540px;">
+  <div class="nova-card-header"><span>Link Config</span></div>
+  <div style="padding:24px;">
+    <div style="background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:8px;padding:12px 16px;margin-bottom:20px;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:1px;">YOUR SHORT URL PATTERN</span>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--gold-bright);margin-top:4px;">
+        /u/{{ request.user.username }}/<strong>[slug]</strong>/
+      </div>
+    </div>
+    <form method="post" class="form-nova">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Slug</label>
+        {{ form.slug }}
+        <div class="form-hint">e.g. resume, portfolio, cv, github</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Type</label>
+        {{ form.target_type }}
+      </div>
+      {% if form.instance.pk %}
+      <div style="padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-bottom:20px;">
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;">Click Count</span>
+        <div style="font-size:24px;font-weight:800;color:var(--cyan);margin-top:4px;">{{ form.instance.click_count }}</div>
+      </div>
+      {% endif %}
+      <div class="form-group">
+        <label class="form-check-nova">
+          {{ form.is_active }}
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:1px;">LINK ACTIVE</span>
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;padding-top:8px;">
+        <button type="submit" class="btn-nova btn-nova-gold"><i class="bi bi-check-lg"></i> Save Link</button>
+        <a href="{% url 'ptfapp2:short_links_list' %}" class="btn-nova btn-nova-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

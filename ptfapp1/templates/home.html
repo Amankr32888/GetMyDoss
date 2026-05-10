@@ -1,0 +1,665 @@
+{% extends 'base2.html' %}
+
+{% block extra_css %}
+
+/* ══════════════════════════════════════════════════════════
+   HERO SECTION
+   - Single column on mobile, 2-col on desktop
+   - Text uses clamp() so it never overflows
+   - Avatar moves above text on mobile
+══════════════════════════════════════════════════════════ */
+#home {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr;
+  gap: clamp(20px,4vw,60px);
+  align-items: center;
+  padding: clamp(72px,10vw,100px) clamp(18px,5vw,60px) clamp(40px,6vw,80px);
+  position: relative; overflow: hidden;
+  border-top: none;
+}
+
+/* ── Hero left column ── */
+.hero-left { min-width: 0; }
+
+.hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.h-eyebrow-line { height: 1px; width: 36px; flex-shrink: 0; background: linear-gradient(90deg,var(--gold),transparent); }
+.h-eyebrow-text { font-family: var(--mono); font-size: 10px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; text-shadow: 0 0 12px rgba(201,168,76,.5); }
+
+/* THE FIX: clamp keeps name from overflowing at any size */
+.hero-name {
+  font-size: clamp(36px, 7.5vw, 92px);
+  font-weight: 800;
+  line-height: .92;
+  letter-spacing: clamp(-1px,-0.03em,-3px);
+  margin-bottom: 14px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.hero-name .ln1 { display: block; color: var(--text); }
+.hero-name .ln2 { display: block; color: transparent; -webkit-text-stroke: 1.5px rgba(201,168,76,.5); }
+.hero-name .ln3 {
+  display: block;
+  background: linear-gradient(135deg,var(--gold-bright),var(--cyan),var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  background-size: 200%; animation: gShift 4s ease-in-out infinite alternate;
+}
+@keyframes gShift { from { background-position: 0%; } to { background-position: 100%; } }
+
+.hero-title-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 22px 0 16px;
+}
+.h-title { font-family: var(--mono); font-size: clamp(10px,2vw,12px); color: var(--text-muted); letter-spacing: 2px; }
+.h-badge {
+  background: var(--gold-dim); border: 1px solid var(--gold-border);
+  color: var(--gold-bright); font-family: var(--mono);
+  font-size: 9px; letter-spacing: 2px;
+  padding: 4px 12px; border-radius: 20px;
+  animation: bPulse 3s ease-in-out infinite; white-space: nowrap;
+}
+@keyframes bPulse { 50% { box-shadow: 0 0 14px rgba(201,168,76,.3); } }
+
+.hero-desc { font-size: clamp(13px,2vw,15px); color: var(--text-muted); line-height: 1.8; max-width: 480px; margin-bottom: 32px; }
+
+.hero-ctas { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-hero-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg,var(--gold),#a07830);
+  color: var(--bg); font-family: var(--mono);
+  font-size: clamp(9px,1.5vw,11px); font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: clamp(10px,2vw,14px) clamp(18px,3vw,28px); border-radius: 10px;
+  text-decoration: none; box-shadow: 0 8px 32px rgba(201,168,76,.35);
+  transition: all .3s; white-space: nowrap;
+}
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(201,168,76,.5); color: var(--bg); }
+.btn-hero-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border); color: var(--text-muted);
+  font-family: var(--mono); font-size: clamp(9px,1.5vw,11px);
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: clamp(10px,2vw,14px) clamp(14px,2.5vw,24px); border-radius: 10px;
+  text-decoration: none; background: var(--surface); transition: all .3s; white-space: nowrap;
+}
+.btn-hero-ghost:hover { border-color: rgba(0,255,224,.3); color: var(--cyan); box-shadow: 0 0 20px rgba(0,255,224,.1); }
+
+/* ── Hero right — avatar orb ── */
+.hero-right {
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  width: clamp(180px,24vw,320px);
+  height: clamp(180px,24vw,320px);
+  flex-shrink: 0;
+}
+.avatar-orb {
+  position: relative; width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.orb-ring { position: absolute; border-radius: 50%; border: 1px solid; animation: oSpin linear infinite; }
+.or1 { inset: -14px; border-color: rgba(201,168,76,.25); animation-duration: 20s; }
+.or2 { inset: 0;     border-color: rgba(0,255,224,.15);  animation-duration: 14s; animation-direction: reverse; }
+.or3 { inset: 14px;  border-color: rgba(139,92,246,.12); animation-duration: 30s; }
+@keyframes oSpin { to { transform: rotate(360deg); } }
+.orb-glow {
+  position: absolute; inset: 20px; border-radius: 50%;
+  background: conic-gradient(from 0deg,rgba(201,168,76,.15),rgba(0,255,224,.1),rgba(255,45,120,.08),rgba(201,168,76,.15));
+  animation: oSpin 8s linear infinite; filter: blur(2px);
+}
+.avatar-img, .avatar-placeholder {
+  position: relative; z-index: 2;
+  width: clamp(120px,17vw,220px); height: clamp(120px,17vw,220px);
+  border-radius: 50%; border: 3px solid var(--gold);
+  box-shadow: 0 0 40px rgba(201,168,76,.35), 0 0 80px rgba(0,255,224,.1);
+}
+.avatar-img { object-fit: cover; }
+.avatar-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg,var(--gold),var(--violet));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  font-size: clamp(40px,8vw,72px); font-weight: 800;
+}
+
+/* ══════════════════════════════════════════════════════════
+   STATS BAR
+══════════════════════════════════════════════════════════ */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative; z-index: 2;
+}
+.stat-item {
+  padding: clamp(16px,3vw,24px) clamp(16px,3vw,40px);
+  border-right: 1px solid var(--border);
+  position: relative; overflow: hidden; transition: background .3s;
+}
+.stat-item:last-child { border-right: none; }
+.stat-item:hover { background: var(--gold-dim); }
+.stat-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,transparent,var(--gold),transparent); opacity: 0; transition: opacity .3s; }
+.stat-item:hover::before { opacity: 1; }
+.stat-num {
+  font-size: clamp(22px,4vw,34px); font-weight: 800;
+  letter-spacing: -2px; line-height: 1;
+  background: linear-gradient(135deg,var(--gold-bright),var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 4px;
+}
+.stat-label { font-family: var(--mono); font-size: 9px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
+
+/* ══════════════════════════════════════════════════════════
+   ABOUT
+══════════════════════════════════════════════════════════ */
+#about {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px,100%), 1fr));
+  gap: clamp(30px,5vw,80px);
+  align-items: start;
+}
+.about-meta { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.meta-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; min-width: 0; }
+.meta-row i { font-size: 13px; color: var(--gold); width: 16px; text-align: center; flex-shrink: 0; }
+.meta-text { font-family: var(--mono); font-size: 11px; color: var(--text-muted); letter-spacing: .5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.about-bio { font-size: clamp(13px,2vw,15px); color: var(--text-muted); line-height: 1.85; }
+
+.about-card {
+  background: radial-gradient(ellipse at 30% 30%,#1a0a3a,#030212);
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: clamp(24px,4vw,40px); position: relative; overflow: hidden;
+}
+.about-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,transparent,var(--gold),var(--cyan),transparent); }
+.about-card-glow { position: absolute; inset: -40%; background: conic-gradient(from 0deg,rgba(139,92,246,.08),rgba(0,255,224,.05),rgba(201,168,76,.06),rgba(255,45,120,.05),rgba(139,92,246,.08)); animation: oSpin 20s linear infinite; filter: blur(20px); }
+.about-card-inner { position: relative; z-index: 2; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
+.info-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.info-tile-label { font-family: var(--mono); font-size: 8px; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+.info-tile-val { font-size: 13px; font-weight: 700; color: var(--text); }
+
+/* ══════════════════════════════════════════════════════════
+   SKILLS
+══════════════════════════════════════════════════════════ */
+#skills { background: linear-gradient(180deg,transparent,rgba(201,168,76,.015),transparent); }
+.skills-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px,100%), 1fr));
+  gap: clamp(24px,4vw,60px);
+  align-items: start;
+}
+.skill-group { margin-bottom: 28px; }
+.skill-group-head {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 3px;
+  color: var(--text-muted); text-transform: uppercase;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.skill-group-head::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg,var(--border),transparent); }
+.pill-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.skill-pill { padding: 6px 14px; border-radius: 20px; font-family: var(--mono); font-size: 10px; letter-spacing: 1px; transition: all .2s; }
+.sp-tech { background: var(--cyan-dim); border: 1px solid rgba(0,255,224,.2); color: var(--cyan); }
+.sp-tech:hover { background: rgba(0,255,224,.18); border-color: rgba(0,255,224,.4); }
+.sp-soft { background: var(--violet-dim); border: 1px solid rgba(139,92,246,.25); color: #a78bfa; }
+.sp-soft:hover { background: rgba(139,92,246,.2); border-color: rgba(139,92,246,.4); }
+
+/* Skills highlights panel */
+.skills-highlights {
+  background: radial-gradient(ellipse at 30% 30%,#1a0a3a,#030212);
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: clamp(20px,3vw,36px); position: relative; overflow: hidden; min-height: 180px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SOCIAL LINKS
+══════════════════════════════════════════════════════════ */
+#social-links { background: linear-gradient(180deg,transparent,rgba(139,92,246,.01),transparent); }
+.social-section-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.social-card {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 18px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text-muted); font-family: var(--mono);
+  font-size: 11px; letter-spacing: 1.5px;
+  text-decoration: none; text-transform: uppercase;
+  transition: all .25s;
+}
+.social-card i { font-size: 15px; flex-shrink: 0; }
+.social-card:hover { border-color: var(--gold-border); color: var(--gold-bright); background: var(--gold-dim); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,.15); }
+
+/* ══════════════════════════════════════════════════════════
+   PROJECTS
+   Auto-fit grid: wraps gracefully, no overflow
+══════════════════════════════════════════════════════════ */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 14px;
+}
+/* Featured card spans 2 cols only if enough room */
+@media (min-width: 700px) {
+  .proj-card.featured { grid-column: span 2; }
+  .proj-card.featured .proj-preview { height: 240px; }
+}
+.proj-card {
+  border-radius: 14px; border: 1px solid var(--border);
+  background: var(--surface); overflow: hidden;
+  transition: all .4s cubic-bezier(.23,1,.32,1);
+  display: flex; flex-direction: column; text-decoration: none;
+}
+.proj-card:hover { border-color: var(--gold-border); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(201,168,76,.12); }
+.proj-preview {
+  height: 180px; position: relative; overflow: hidden;
+  background: radial-gradient(ellipse at 30% 40%,#12082a,#030212);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.proj-preview-icon { font-size: 48px; opacity: .15; }
+.proj-preview img { width: 100%; height: 100%; object-fit: cover; }
+.proj-info { padding: clamp(14px,2.5vw,18px); flex: 1; display: flex; flex-direction: column; }
+.proj-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.proj-tag { font-family: var(--mono); font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+.pt-gold { background: var(--gold-dim); color: var(--gold-bright); border: 1px solid var(--gold-border); }
+.pt-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,255,224,.2); }
+.pt-violet { background: var(--violet-dim); color: #a78bfa; border: 1px solid rgba(139,92,246,.25); }
+.pt-mag { background: var(--magenta-dim); color: var(--magenta); border: 1px solid rgba(255,45,120,.25); }
+.proj-name { font-size: clamp(13px,2vw,15px); font-weight: 700; color: var(--text); letter-spacing: -.3px; margin-bottom: 6px; }
+.proj-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; flex: 1; }
+.proj-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.proj-link { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; text-decoration: none; border: 1px solid; transition: all .2s; white-space: nowrap; }
+.pl-cyan { border-color: rgba(0,255,224,.2); color: var(--cyan); background: var(--cyan-dim); }
+.pl-cyan:hover { background: rgba(0,255,224,.18); }
+.pl-ghost { border-color: var(--border); color: var(--text-muted); background: var(--surface); }
+.pl-ghost:hover { border-color: var(--gold-border); color: var(--gold-bright); }
+
+/* ══════════════════════════════════════════════════════════
+   CONTACT
+══════════════════════════════════════════════════════════ */
+#contact { text-align: center; position: relative; overflow: hidden; }
+#contact::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: clamp(300px,50vw,600px); height: clamp(150px,25vw,300px); background: radial-gradient(ellipse,rgba(201,168,76,.06),transparent 70%); pointer-events: none; }
+.contact-tagline { font-size: clamp(28px,5.5vw,64px); font-weight: 800; letter-spacing: -2px; margin-bottom: 14px; line-height: 1; }
+.contact-tagline .italic { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--gold-bright); font-size: .82em; }
+.contact-sub { font-size: clamp(13px,2vw,15px); color: var(--text-muted); margin: 0 auto 36px; line-height: 1.7; max-width: 500px; }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px,100%), 1fr));
+  gap: clamp(20px,4vw,40px); text-align: left; max-width: 860px; margin: 0 auto;
+}
+.contact-form-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: clamp(20px,4vw,32px);
+  position: relative; overflow: hidden;
+}
+.contact-form-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,transparent,var(--gold),transparent); }
+.form-group-pub { margin-bottom: 14px; }
+.form-label-pub { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 7px; }
+.form-input-pub {
+  width: 100%; background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: 12px;
+  padding: 10px 12px; outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.form-input-pub:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,.1); }
+.form-input-pub.ta { min-height: 100px; resize: vertical; }
+.btn-send {
+  width: 100%; background: linear-gradient(135deg,var(--gold),#a07830);
+  border: none; border-radius: 10px; color: var(--bg);
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase; padding: 14px;
+  cursor: pointer; box-shadow: 0 8px 28px rgba(201,168,76,.3);
+  transition: all .3s;
+}
+.btn-send:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(201,168,76,.45); }
+.btn-send:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+.contact-info-card { display: flex; flex-direction: column; gap: 14px; }
+.contact-info-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: all .2s; }
+.contact-info-item:hover { border-color: var(--gold-border); background: var(--gold-dim); }
+.ci-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--gold-dim); border: 1px solid var(--gold-border); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--gold-bright); flex-shrink: 0; }
+.ci-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+.ci-val { font-size: 13px; color: var(--text); word-break: break-word; }
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE OVERRIDES
+   Everything adapts — no overflow, no hidden content
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Hero: stack vertically, avatar on top */
+  #home {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    text-align: center;
+    justify-items: center;
+    padding: 80px 18px 50px;
+  }
+  .hero-eyebrow { justify-content: center; }
+  .hero-desc { max-width: 100%; margin-left: auto; margin-right: auto; }
+  .hero-ctas { justify-content: center; }
+  .hero-title-bar { justify-content: center; }
+  .hero-right {
+    order: -1;
+    width: clamp(150px,50vw,220px);
+    height: clamp(150px,50vw,220px);
+    margin-bottom: 10px;
+  }
+
+  .stats-bar { grid-template-columns: 1fr 1fr; }
+  .stat-item:nth-child(2) { border-right: none; }
+  .stat-item:nth-child(3) { border-top: 1px solid var(--border); }
+  .stat-item:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
+}
+
+@media (max-width: 500px) {
+  .hero-name { letter-spacing: -0.5px; }
+  .stat-item { padding: 14px 12px; }
+  .stat-num { font-size: clamp(20px,6vw,26px); }
+  .about-card { padding: 20px 16px; }
+  .contact-form-card { padding: 18px 14px; }
+  .btn-hero-primary, .btn-hero-ghost { padding: 11px 16px; font-size: 10px; }
+  .proj-card.featured { grid-column: span 1 !important; }
+  .proj-card.featured .proj-preview { height: 180px !important; }
+}
+
+{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO ── -->
+<section id="home">
+  <div class="hero-left">
+    <div class="hero-eyebrow reveal">
+      <div class="h-eyebrow-line"></div>
+      <div class="h-eyebrow-text">Portfolio</div>
+    </div>
+    <h1 class="hero-name reveal">
+      {% with parts=profile.full_name.split %}
+      <span class="ln1">{{ parts.0|upper }}</span>
+      <span class="ln2">{% if parts|length > 1 %}{{ parts.1|upper }}{% endif %}</span>
+      <span class="ln2">{% if parts|length > 2 %}{{ parts.2|upper }}{% endif %}</span>
+      <span class="ln2">{% if parts|length > 3 %}{{ parts.3|upper }}{% endif %}</span>
+            -
+      <span class="ln3">{{ profile.job_title|default:"__" }}</span>
+      {% endwith %}
+    </h1>
+    <div class="hero-title-bar reveal">
+      <span class="h-title">{{ profile.job_title|default:"Creative Developer" }}</span>
+      <span class="h-badge">✦ Open to work</span>
+    </div>
+    <p class="hero-desc reveal">{{ profile.bio|truncatewords:30 }}</p>
+    <div class="hero-ctas reveal">
+
+      <a href="#contact" class="btn-hero-primary">Get in Touch →</a>
+      {% if profile.cv_file %}
+
+      <a href="{{ profile.cv_file.url }}" download class="btn-hero-primary"><i class="bi bi-download"></i> Download CV</a>
+      {% else %}
+
+      <a href="#projects" class="btn-hero-ghost"><i class="bi bi-folder2-open"></i> View Work</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="hero-right reveal">
+    <div class="avatar-orb">
+      <div class="orb-ring or1"></div>
+      <div class="orb-ring or2"></div>
+      <div class="orb-ring or3"></div>
+      <div class="orb-glow"></div>
+      {% if profile.profile_image %}
+      <img src="{{ profile.profile_image.url }}" alt="{{ profile.full_name }}" class="avatar-img">
+      {% else %}
+      <div class="avatar-placeholder">{{ profile.full_name|first|upper }}</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar">
+  <div class="stat-item reveal">
+    <div class="stat-num">{{ featured_projects|length }}+</div>
+    <div class="stat-label">Projects</div>
+  </div>
+  {% if skills_technical %}
+  <div class="stat-item reveal">
+    <div class="stat-num">{{ skills_technical|length }}</div>
+    <div class="stat-label">Tech Skills</div>
+  </div>
+  {% endif %}
+  {% if skills_soft %}
+  <div class="stat-item reveal">
+    <div class="stat-num">{{ skills_soft|length }}</div>
+    <div class="stat-label">Soft Skills</div>
+  </div>
+  {% endif %}
+  <div class="stat-item reveal">
+    <div class="stat-num">∞</div>
+    <div class="stat-label">Ambition</div>
+  </div>
+</div>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div>
+    <div class="section-eyebrow reveal">
+      <div class="eyebrow-line"></div>
+      <div class="eyebrow-text">About</div>
+    </div>
+    <div class="section-title-wrap reveal">
+      <div><span class="section-num"></span><span class="section-h2">Who I <span class="acc">Am</span></span></div>
+    </div>
+    <p class="about-bio reveal">{{ profile.bio }}</p>
+    {% if profile.email or profile.phone or profile.address %}
+    <div class="about-meta reveal">
+      {% if profile.email %}<div class="meta-row"><i class="bi bi-envelope"></i><span class="meta-text">{{ profile.email }}</span></div>{% endif %}
+      {% if profile.phone %}<div class="meta-row"><i class="bi bi-telephone"></i><span class="meta-text">{{ profile.phone }}</span></div>{% endif %}
+      {% if profile.address %}<div class="meta-row"><i class="bi bi-geo-alt"></i><span class="meta-text">{{ profile.address }}{% if profile.pincode %} — {{ profile.pincode }}{% endif %}</span></div>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="reveal">
+    <div class="about-card">
+      <div class="about-card-glow"></div>
+      <div class="about-card-inner">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;">Profile</div>
+        <div style="font-size:clamp(16px,3vw,20px);font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px;">{{ profile.full_name }}</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:20px;">{{ profile.job_title }}</div>
+        <div class="info-grid">
+          <div class="info-tile"><div class="info-tile-label">Technical</div><div class="info-tile-val">{{ skills_technical|length }} skills</div></div>
+          <div class="info-tile"><div class="info-tile-label">Projects</div><div class="info-tile-val">{{ featured_projects|length }}+ built</div></div>
+          <div class="info-tile"><div class="info-tile-label">Soft Skills</div><div class="info-tile-val">{{ skills_soft|length }} listed</div></div>
+          <div class="info-tile"><div class="info-tile-label">Status</div><div class="info-tile-val" style="color:var(--cyan);">Available</div></div>
+        </div>
+        {% if profile.cv_file %}
+        <div style="margin-top:18px;">
+          <a href="{{ profile.cv_file.url }}" download class="btn-hero-ghost" style="display:inline-flex;font-size:10px;padding:10px 16px;">
+            <i class="bi bi-download"></i> Download CV
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SKILLS ── -->
+<section id="skills">
+  <div class="section-title-wrap reveal">
+    <div><span class="section-num"></span><span class="section-h2">Skills &amp; <span class="acc">Expertise</span></span></div>
+    <a href="{% url 'ptfapp1:skills_list' user_obj.username %}" class="section-all">All Skills →</a>
+  </div>
+  <div class="skills-layout">
+    <div class="reveal">
+      {% if skills_technical %}
+      <div class="skill-group">
+        <div class="skill-group-head">Technical</div>
+        <div class="pill-wrap">
+          {% for skill in skills_technical %}<span class="skill-pill sp-tech">{{ skill.name }}</span>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% if skills_soft %}
+      <div class="skill-group">
+        <div class="skill-group-head">Soft Skills</div>
+        <div class="pill-wrap">
+          {% for skill in skills_soft %}<span class="skill-pill sp-soft">{{ skill.name }}</span>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="reveal">
+      <div class="skills-highlights">
+        <div style="position:absolute;inset:0;background:conic-gradient(from 0deg at 50% 50%,rgba(139,92,246,.1) 0deg,rgba(0,255,224,.06) 90deg,rgba(201,168,76,.08) 180deg,rgba(255,45,120,.06) 270deg,rgba(139,92,246,.1) 360deg);animation:oSpin 18s linear infinite;opacity:.5;"></div>
+        <div style="position:relative;z-index:2;">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;margin-bottom:16px;">Highlights</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:8px;height:8px;flex-shrink:0;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);"></div>
+              <span style="font-size:13px;color:var(--text-muted);">{{ skills_technical|length }} Technical skills</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:8px;height:8px;flex-shrink:0;border-radius:50%;background:#a78bfa;box-shadow:0 0 12px #a78bfa;"></div>
+              <span style="font-size:13px;color:var(--text-muted);">{{ skills_soft|length }} Soft skills</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:8px;height:8px;flex-shrink:0;border-radius:50%;background:var(--gold-bright);box-shadow:0 0 12px var(--gold);"></div>
+              <span style="font-size:13px;color:var(--text-muted);">{{ featured_projects|length }} Featured projects</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOCIAL LINKS ── -->
+{% if social_links %}
+<section id="social-links">
+  <div class="section-title-wrap reveal">
+    <div><span class="section-num"></span><span class="section-h2">Find Me <span class="acc">Online</span></span></div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:clamp(20px,4vw,32px);position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+    <div class="social-section-grid reveal">
+      {% for link in social_links %}
+      <a href="{{ link.url }}" target="_blank" class="social-card">
+        <i class="bi bi-{{ link.icon_filename|default:'link' }}"></i>
+        {{ link.get_platform_display }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── PROJECTS ── -->
+{% if featured_projects %}
+<section id="projects">
+  <div class="section-title-wrap reveal">
+    <div><span class="section-num"></span><span class="section-h2">Featured <span class="acc">Work</span></span></div>
+    <a href="{% url 'ptfapp1:projects_list' user_obj.username %}" class="section-all">All Projects →</a>
+  </div>
+  <div class="projects-grid">
+    {% for project in featured_projects %}
+    <div class="proj-card {% if forloop.first %}featured{% endif %} reveal">
+      <div class="proj-preview">
+        {% if project.image %}
+        <img src="{{ project.image.url }}" alt="{{ project.title }}">
+        {% else %}
+        <div class="proj-preview-icon"><i class="bi bi-code-slash"></i></div>
+        {% endif %}
+      </div>
+      <div class="proj-info">
+        <div class="proj-tags">
+          {% if forloop.first %}<span class="proj-tag pt-gold">Featured</span>{% endif %}
+          {% for tech in project.get_tech_list|slice:":2" %}<span class="proj-tag pt-cyan">{{ tech }}</span>{% endfor %}
+        </div>
+        <div class="proj-name">{{ project.title }}</div>
+        <div class="proj-desc">{{ project.short_description|default:project.full_description|truncatewords:18 }}</div>
+        <div class="proj-links">
+          {% if project.project_url %}<a href="{{ project.project_url }}" target="_blank" class="proj-link pl-cyan"><i class="bi bi-box-arrow-up-right"></i> Live</a>{% endif %}
+          {% if project.github_url %}<a href="{{ project.github_url }}" target="_blank" class="proj-link pl-ghost"><i class="bi bi-github"></i> GitHub</a>{% endif %}
+          {% if project.pdf_file %}<a href="{{ project.pdf_file.url }}" target="_blank" class="proj-link pl-ghost"><i class="bi bi-file-pdf"></i> Details</a>{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="contact-tagline reveal">
+    Let's build something<br><span class="italic">remarkable</span>
+  </div>
+  <p class="contact-sub reveal">Open to new opportunities, collaborations, and interesting conversations. I do respond!</p>
+
+  <div class="contact-grid reveal">
+    <div class="contact-form-card">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:18px;">Send a Message</div>
+      <form method="post" id="contactForm">
+        {% csrf_token %}
+        <div class="form-group-pub">
+          <label class="form-label-pub">Name *</label>
+          <input type="text" name="name" class="form-input-pub" required placeholder="Your name">
+        </div>
+        <div class="form-group-pub">
+          <label class="form-label-pub">Email *</label>
+          <input type="email" name="email" class="form-input-pub" required placeholder="you@example.com">
+        </div>
+        <div class="form-group-pub">
+          <label class="form-label-pub">Subject *</label>
+          <input type="text" name="subject" class="form-input-pub" required placeholder="What's this about?">
+        </div>
+        <div class="form-group-pub">
+          <label class="form-label-pub">Company</label>
+          <input type="text" name="company_name" class="form-input-pub" placeholder="Your company (optional)">
+        </div>
+        <div class="form-group-pub">
+          <label class="form-label-pub">Offered Position</label>
+          <input type="text" name="offered_position" class="form-input-pub" placeholder="e.g. Senior Dev (optional)">
+        </div>
+        <div class="form-group-pub">
+          <label class="form-label-pub">Message *</label>
+          <textarea name="message" class="form-input-pub ta" required placeholder="Tell me what you have in mind..."></textarea>
+        </div>
+        <div class="form-group-pub">
+          <label class="form-label-pub">Phone</label>
+          <input type="text" name="phone" class="form-input-pub" placeholder="Optional">
+        </div>
+        <button type="submit" class="btn-send" id="sendBtn">Send Message →</button>
+      </form>
+    </div>
+
+    <div class="contact-info-card">
+      {% if profile.email %}
+      <div class="contact-info-item">
+        <div class="ci-icon"><i class="bi bi-envelope"></i></div>
+        <div><div class="ci-label">Email</div><div class="ci-val"><a href="mailto:{{ profile.email }}" style="color:var(--text);text-decoration:none;">{{ profile.email }}</a></div></div>
+      </div>
+      {% endif %}
+      {% if profile.phone %}
+      <div class="contact-info-item">
+        <div class="ci-icon"><i class="bi bi-telephone"></i></div>
+        <div><div class="ci-label">Phone</div><div class="ci-val">{{ profile.phone|slice:":5" }}•••••</div></div>
+      </div>
+      {% endif %}
+      {% if profile.address %}
+      <div class="contact-info-item">
+        <div class="ci-icon"><i class="bi bi-geo-alt"></i></div>
+        <div><div class="ci-label">Location</div><div class="ci-val">{{ profile.address }}</div></div>
+      </div>
+      {% endif %}
+      
+    </div>
+  </div>
+</section>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(){
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+});
+</script>
+{% endblock %}

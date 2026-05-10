@@ -1,0 +1,54 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Documents{% endblock %}
+{% block nav_docs %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">My <span class="accent">Documents</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:document_add' %}" class="btn-nova btn-nova-gold">
+    <i class="bi bi-plus-lg"></i> Add Document
+  </a>
+</div>
+
+<div class="nova-card">
+  <div class="nova-card-header"><span>All Documents</span><span style="color:var(--text-dim);">{{ documents|length }} files</span></div>
+  {% if documents %}
+  <table class="nova-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Downloads</th>
+        <th>Uploaded</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in documents %}
+      <tr>
+        <td><span class="primary-text">{{ doc.title }}</span></td>
+        <td>
+          <span style="font-family:var(--mono);font-size:12px;color:var(--cyan);">{{ doc.download_count }}</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-left:4px;">downloads</span>
+        </td>
+        <td><span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);">{{ doc.created_at|date:"M d, Y" }}</span></td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <a href="{{ doc.file.url }}" class="btn-nova btn-nova-cyan btn-sm" target="_blank"><i class="bi bi-download"></i> View</a>
+            <a href="{% url 'ptfapp2:document_edit' doc.pk %}" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+            <a href="{% url 'ptfapp2:document_delete' doc.pk %}" class="btn-nova btn-nova-danger btn-sm" onclick="return confirm('Delete this document?')"><i class="bi bi-trash"></i> Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">⬡</div>
+    <div class="empty-state-text">No documents uploaded yet</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

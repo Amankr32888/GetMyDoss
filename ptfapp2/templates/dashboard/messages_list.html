@@ -1,0 +1,44 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Messages{% endblock %}
+{% block nav_messages %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">Inbox <span class="accent">Messages</span></h1>
+  </div>
+</div>
+
+<div class="nova-card">
+  <div class="nova-card-header"><span>All Messages</span><span style="color:var(--text-dim);">{{ messages_list|length }} total</span></div>
+  {% if messages_list %}
+  <table class="nova-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Subject</th>
+        <th>Company</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for msg in messages_list %}
+      <tr>
+        <td><span class="primary-text">{{ msg.name }}</span></td>
+        <td><a href="mailto:{{ msg.email }}" style="color:var(--cyan);text-decoration:none;font-family:var(--mono);font-size:11px;">{{ msg.email }}</a></td>
+        <td>{{ msg.subject }}</td>
+        <td>{{ msg.company_name|default:"—" }}</td>
+        <td><span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);">{{ msg.created_at|date:"M d, Y" }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">✉</div>
+    <div class="empty-state-text">No messages yet</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Social Links{% endblock %}
+{% block nav_social %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">Social <span class="accent">Links</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:social_link_add' %}" class="btn-nova btn-nova-gold">
+    <i class="bi bi-plus-lg"></i> Add Link
+  </a>
+</div>
+
+<div class="nova-card">
+  <div class="nova-card-header"><span>All Social Links</span><span style="color:var(--text-dim);">{{ links|length }} total</span></div>
+  {% if links %}
+  <table class="nova-table">
+    <thead>
+      <tr>
+        <th>Platform</th>
+        <th>URL</th>
+        <th>Active</th>
+        <th>Order</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+      <tr>
+        <td><span class="primary-text">{{ link.get_platform_display }}</span></td>
+        <td>
+          <a href="{{ link.url }}" target="_blank" style="color:var(--cyan);font-family:var(--mono);font-size:11px;text-decoration:none;">
+            {{ link.url|truncatechars:40 }}
+          </a>
+        </td>
+        <td>
+          {% if link.is_active %}
+          <span class="badge-nova badge-cyan"><i class="bi bi-check"></i> Active</span>
+          {% else %}
+          <span class="badge-nova badge-muted">Off</span>
+          {% endif %}
+        </td>
+        <td><span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);">{{ link.order }}</span></td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <a href="{% url 'ptfapp2:social_link_edit' link.pk %}" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+            <a href="{% url 'ptfapp2:social_link_delete' link.pk %}" class="btn-nova btn-nova-danger btn-sm" onclick="return confirm('Delete?')"><i class="bi bi-trash"></i> Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">✦</div>
+    <div class="empty-state-text">No social links yet</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

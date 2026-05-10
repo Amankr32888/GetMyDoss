@@ -1,0 +1,63 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Short Links{% endblock %}
+{% block nav_shortlinks %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">Short <span class="accent">Links</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:short_link_add' %}" class="btn-nova btn-nova-gold">
+    <i class="bi bi-plus-lg"></i> Add Link
+  </a>
+</div>
+
+<div class="nova-card">
+  <div class="nova-card-header"><span>All Short Links</span><span style="color:var(--text-dim);">{{ links|length }} total</span></div>
+  {% if links %}
+  <table class="nova-table">
+    <thead>
+      <tr>
+        <th>Short URL</th>
+        <th>Clicks</th>
+        <th>Active</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <code style="font-family:var(--mono);font-size:11px;color:var(--gold-bright);background:var(--gold-dim);padding:3px 8px;border-radius:4px;border:1px solid var(--gold-border);">/u/{{ request.user.username }}/{{ link.slug }}/</code>
+            <button class="btn-nova btn-nova-ghost btn-sm" onclick="navigator.clipboard.writeText(window.location.origin+'/u/{{ request.user.username }}/{{ link.slug }}/');this.innerHTML='<i class=\'bi bi-check\'></i>';" title="Copy">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </div>
+        </td>
+        <td><span style="font-family:var(--mono);font-size:13px;color:var(--cyan);">{{ link.click_count }}</span></td>
+        <td>
+          {% if link.is_active %}
+          <span class="badge-nova badge-cyan"><i class="bi bi-check"></i> Active</span>
+          {% else %}
+          <span class="badge-nova badge-muted">Off</span>
+          {% endif %}
+        </td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <a href="{% url 'ptfapp2:short_link_edit' link.pk %}" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+            <a href="{% url 'ptfapp2:short_link_delete' link.pk %}" class="btn-nova btn-nova-danger btn-sm" onclick="return confirm('Delete this short link?')"><i class="bi bi-trash"></i> Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">◎</div>
+    <div class="empty-state-text">No short links yet</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

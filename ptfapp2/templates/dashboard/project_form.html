@@ -1,0 +1,97 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Project{% endblock %}
+{% block nav_projects %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1 class="page-title">{% if form.instance.pk %}Edit{% else %}Add{% endif %} <span class="accent">Project</span></h1>
+  </div>
+  <a href="{% url 'ptfapp2:projects_list' %}" class="btn-nova btn-nova-ghost"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="nova-card" style="max-width:720px;">
+  <div class="nova-card-header"><span>Project Details</span></div>
+  <div style="padding:24px;">
+    <form method="post" enctype="multipart/form-data" class="form-nova">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        {{ form.title }}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group">
+          <label class="form-label">Order</label>
+          {{ form.order }}
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;padding-top:26px;">
+          <label class="form-check-nova">
+            {{ form.featured }}
+            <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:1px;">FEATURED PROJECT</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Short Description</label>
+        {{ form.short_description }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Full Description</label>
+        {{ form.full_description }}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group">
+          <label class="form-label">Project Image</label>
+          {% if form.instance.image %}
+          <div style="margin-bottom:8px;">
+            <a href="{{ form.instance.image.url }}" target="_blank" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-image"></i> View Current</a>
+          </div>
+          {% endif %}
+          {{ form.image }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">PDF File</label>
+          {% if form.instance.pdf_file %}
+          <div style="margin-bottom:8px;">
+            <a href="{{ form.instance.pdf_file.url }}" target="_blank" class="btn-nova btn-nova-ghost btn-sm"><i class="bi bi-file-pdf"></i> View Current</a>
+          </div>
+          {% endif %}
+          {{ form.pdf_file }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Technologies <span style="font-size:8px;opacity:.6;">(comma-separated)</span></label>
+        {{ form.technologies }}
+        <div class="form-hint">e.g. React, Django, PostgreSQL</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group">
+          <label class="form-label">Project URL</label>
+          {{ form.project_url }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">GitHub URL</label>
+          {{ form.github_url }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Work Profile</label>
+        {{ form.work_profile }}
+      </div>
+
+      <div style="display:flex;gap:10px;padding-top:8px;">
+        <button type="submit" class="btn-nova btn-nova-gold"><i class="bi bi-check-lg"></i> Save Project</button>
+        <a href="{% url 'ptfapp2:projects_list' %}" class="btn-nova btn-nova-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
